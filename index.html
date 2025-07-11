@@ -1,199 +1,374 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>4-Box GA Calculator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-    input, button { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
-    h2 { text-align: center; }
-    pre { background: #f9f9f9; padding: 10px; white-space: pre-wrap; }
-  </style>
+	<title>4-Box GA Calculator</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 20px;
+			max-width: 1200px;
+			margin: auto;
+		}
+
+		input,
+		button {
+			width: 100%;
+			padding: 10px;
+			margin: 10px 0;
+			font-size: 16px;
+		}
+
+		h2 {
+			text-align: center;
+		}
+
+		pre {
+			background: #f9f9f9;
+			padding: 10px;
+			white-space: pre-wrap;
+		}
+
+		.container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+
+		.form-section {
+			flex: 1 1 300px;
+		}
+
+		.calendar-section {
+			flex: 1 1 300px;
+		}
+
+
+		#pregnancy-wheel-container {
+			position: relative;
+			width: 400px;
+			height: 400px;
+			margin: auto;
+		}
+
+		#pregnancy-wheel {
+			display: block;
+		}
+	</style>
+
+
+	<!-- Flatpickr CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 </head>
+
 <body>
+	<div class="container">
+		<div class="form-section">
+			<!-- your inputs and buttons go here -->
 
-<h2>4-Box GA Calculator with LMP, EDC</h2>
 
-<h3>LMP</h3>
-<input type="date" id="lmp" placeholder="LMP (optional)">
-
-<h3>EDC</h3>
-<input type="date" id="edc" placeholder="EDC (optional)">
-
-<button onclick="clearLmpEdc()">Clear LMP / EDC</button>
-
-<h3>Known Date / GA</h3>
-<input type="date" id="dateA" placeholder="Date A (known GA)">
-<input type="text" id="gaA" placeholder="GA on Date A (e.g. 10+3)">
-
-<h3>Calculated Date / GA</h3>
-<input type="date" id="dateB" placeholder="Date B (to find GA)">
-<input type="text" id="gaB" placeholder="GA on Date B (e.g. 12+0)">
-
-<button onclick="calculate()">Calculate</button>
-
-<pre id="output"></pre>
-
-<script>
-function parseGA(gaStr) {
-  if (!gaStr) return null;
-  const [w, d] = gaStr.split('+').map(Number);
-  return w * 7 + (d || 0);
-}
-
-function formatGA(days) {
-  const weeks = Math.floor(days / 7);
-  const remDays = days % 7;
-  return `${weeks}+${remDays}`;
-}
-
-function formatDate(date) {
-  const d = new Date(date);
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${day}-${month}-${year}`;
-}
-
-function clearLmpEdc() {
-  document.getElementById("lmp").value = "";
-  document.getElementById("edc").value = "";
-}
-
-function calculate() {
-  const lmpInput = document.getElementById("lmp");
-  const edcInput = document.getElementById("edc");
-  const dateAInput = document.getElementById("dateA");
-  const dateBInput = document.getElementById("dateB");
-  const gaAInput = document.getElementById("gaA");
-  const gaBInput = document.getElementById("gaB");
-  const out = document.getElementById("output");
-
-  const lmpVal = lmpInput.value;
-  const edcVal = edcInput.value;
-  const dA = dateAInput.value;
-  const dB = dateBInput.value;
-  const gaA = parseGA(gaAInput.value);
-  const gaB = parseGA(gaBInput.value);
-
-  let lmpDate = lmpVal ? new Date(lmpVal) : null;
-  let edcDate = edcVal ? new Date(edcVal) : null;
-  let outputLines = [];
-
-  // If only EDC is given, calculate LMP
-  if (!lmpDate && edcDate) {
-    lmpDate = new Date(edcDate);
-    lmpDate.setDate(edcDate.getDate() - 280);
-    lmpInput.value = lmpDate.toISOString().slice(0, 10);
-    outputLines.push(`LMP (calculated from EDC): ${formatDate(lmpDate)}.`);
-  }
-
-  // If only LMP is given, calculate EDC
-  if (lmpDate && !edcDate) {
-    edcDate = new Date(lmpDate);
-    edcDate.setDate(lmpDate.getDate() + 280);
-    edcInput.value = edcDate.toISOString().slice(0, 10);
-    outputLines.push(`EDC (calculated from LMP): ${formatDate(edcDate)}.`);
-  }
-
-  if (lmpDate) {
-    outputLines.push(`LMP: ${formatDate(lmpDate)}.`);
-    outputLines.push(`EDC: ${formatDate(edcDate)}.`);
-
-    if (dA) {
-      const dateA = new Date(dA);
-      const diffA = Math.floor((dateA - lmpDate) / (1000 * 60 * 60 * 24));
-      const formattedGA = formatGA(diffA);
-      outputLines.push(`GA on Date A (${formatDate(dateA)}): ${formattedGA}.`);
-      gaAInput.value = formattedGA;
-    }
-
-    if (dB) {
-      const dateB = new Date(dB);
-      const diffB = Math.floor((dateB - lmpDate) / (1000 * 60 * 60 * 24));
-      const formattedGA = formatGA(diffB);
-      outputLines.push(`GA on Date B (${formatDate(dateB)}): ${formattedGA}.`);
-      gaBInput.value = formattedGA;
-    }
-
-    out.textContent = outputLines.join("\n");
-    return;
-  }
-
-  // Fallback: use Date A + GA A to back-calculate LMP
-  if (dA && gaA != null) {
-    const dateA = new Date(dA);
-    lmpDate = new Date(dateA);
-    lmpDate.setDate(dateA.getDate() - gaA);
-    lmpInput.value = lmpDate.toISOString().slice(0, 10);
-    outputLines.push(`LMP (calculated): ${formatDate(lmpDate)}.`);
-
-    edcDate = new Date(lmpDate);
-    edcDate.setDate(lmpDate.getDate() + 280);
-    edcInput.value = edcDate.toISOString().slice(0, 10);
-    outputLines.push(`EDC (calculated): ${formatDate(edcDate)}.`);
-
-    if (dB && gaB == null) {
-      const dateB = new Date(dB);
-      const diff = (dateB - dateA) / (1000 * 60 * 60 * 24);
-      const resultGA = gaA + diff;
-      const formattedGA = formatGA(resultGA);
-      outputLines.push(`GA on Date B (${formatDate(dateB)}): ${formattedGA}.`);
-      gaBInput.value = formattedGA;
-    } else if (!dB && gaB != null) {
-      const diffDays = gaB - gaA;
-      const targetDate = new Date(dateA);
-      targetDate.setDate(dateA.getDate() + diffDays);
-      const formattedDate = targetDate.toISOString().slice(0, 10);
-      outputLines.push(`Date when GA is ${formatGA(gaB)}: ${formatDate(targetDate)}.`);
-      dateBInput.value = formattedDate;
-    } else if (dB && gaB != null) {
-      out.textContent = "Please enter either Date B or GA B, not both.";
-      return;
-    }
-
-    out.textContent = outputLines.join("\n");
-    return;
-  }
-
-  out.textContent = "Please enter at least LMP, EDC, or Date A with GA.";
-}
-
-document.getElementById("lmp").addEventListener("change", function () {
-  const lmpVal = this.value;
-  if (lmpVal) {
-    const lmpDate = new Date(lmpVal);
-    const edcDate = new Date(lmpDate);
-    edcDate.setDate(lmpDate.getDate() + 280);
-    document.getElementById("edc").value = edcDate.toISOString().slice(0, 10);
-  }
-});
+			<h2>4-Box GA Calculator with LMP, EDC</h2>
 
 
 
-document.getElementById("edc").addEventListener("change", function() {
-  const edcVal = this.value;
-  if (edcVal) {
-    const edcDate = new Date(edcVal);
-    const lmpDate = new Date(edcDate);
-    lmpDate.setDate(edcDate.getDate() - 280);
-    document.getElementById("lmp").value = lmpDate.toISOString().slice(0, 10);
-  }
-});
+			<h3>LMP</h3>
+			<input type="date" id="lmp" placeholder="LMP (optional)">
 
-  if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/ucal/sw.js')
-      .then(function (registration) {
-        console.log('ServiceWorker registered: ', registration);
-      }, function (err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-  });
-}
+			<h3>EDC</h3>
+			<input type="date" id="edc" placeholder="EDC (optional)">
+
+			<button onclick="clearLmpEdc()">Clear LMP / EDC</button>
+
+			<h3>Known Date / GA</h3>
+			<input type="date" id="dateA" placeholder="Date A (known GA)">
+			<input type="text" id="gaA" placeholder="GA on Date A (e.g. 10+3)">
+
+			<h3>Calculated Date / GA</h3>
+			<input type="date" id="dateB" placeholder="Date B (to find GA)">
+			<input type="text" id="gaB" placeholder="GA on Date B (e.g. 12+0)">
+
+			<button onclick="calculate()">Calculate</button>
+
+			<pre id="output"></pre>
+		</div>
+
+		<div class="calendar-section">
+			<h3>Calendar View</h3>
+			<div id="calendar"></div>
+
+			<h3>Pregnancy Wheel</h3>
+			<div id="pregnancy-wheel-container">
+				<svg id="pregnancy-wheel" width="400" height="400" viewBox="0 0 400 400">
+					<!-- Outer circle -->
+					<circle cx="200" cy="200" r="180" stroke="#333" stroke-width="2" fill="none"></circle>
+					<!-- Inner circle (rotatable) -->
+					<g id="inner-circle">
+						<circle cx="200" cy="200" r="140" stroke="#666" stroke-width="2" fill="none"></circle>
+					</g>
+				</svg>
+			</div>
 
 
-</script>
+
+
+		</div>
+	</div>
+
+	<script src="calculator.js"></script>
+
+	<!-- Flatpickr JS -->
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+	<script>
+		// Date pickers for inputs
+		// flatpickr("#lmp", { dateFormat: "Y-m-d" });
+		// flatpickr("#edc", { dateFormat: "Y-m-d" });
+		// flatpickr("#dateA", { dateFormat: "Y-m-d" });
+		// flatpickr("#dateB", { dateFormat: "Y-m-d" });
+
+		// Inline calendar view (read-only)
+		flatpickr("#calendar", {
+			inline: true,
+			dateFormat: "Y-m-d",
+			defaultDate: new Date(),
+			disableMobile: true
+		});
+	</script>
+	<script>
+		const svg = document.getElementById("pregnancy-wheel");
+		const innerCircleGroup = document.getElementById("inner-circle");
+		const cx = 200,
+			cy = 200;
+
+		const daysInMonth = [31, 28, 31, 30, 31, 30,
+			31, 31, 30, 31, 30, 31
+		];
+		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+		];
+
+		const totalDays = daysInMonth.reduce((a, b) => a + b, 0);
+
+
+
+
+
+
+		// ✅ 1️⃣ Inner circle: weeks + week ticks
+		for (let i = 0; i <= 40; i++) { // changed from 1..52 to 0..40
+			const angle = (i * 7 / 365) * 2 * Math.PI - Math.PI / 2; // 7 days per week mapped to 365 days
+
+			// Week number inside
+			const rx = cx + 120 * Math.cos(angle);
+			const ry = cy + 120 * Math.sin(angle);
+			const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			text.setAttribute("x", rx);
+			text.setAttribute("y", ry);
+			text.setAttribute("text-anchor", "middle");
+			text.setAttribute("dominant-baseline", "middle");
+			text.setAttribute("font-size", "10");
+			text.textContent = i;
+
+			// When creating each text, store its base angle:
+			text.dataset.baseAngle = angle; // radians
+			innerCircleGroup.appendChild(text);
+
+			// Week tick mark
+			// Longer tick for week 0 and week 40
+			// ✅ Inner circle week ticks — longer for 0 & 40, and red color for those
+			const weekTickLength = (i === 0 || i === 40) ? 30 : 5;
+			const tickColor = (i === 0 || i === 40) ? "red" : "#666";
+
+			const x1 = cx + 140 * Math.cos(angle);
+			const y1 = cy + 140 * Math.sin(angle);
+			const x2 = cx + (140 + weekTickLength) * Math.cos(angle);
+			const y2 = cy + (140 + weekTickLength) * Math.sin(angle);
+
+			const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+			line.setAttribute("x1", x1);
+			line.setAttribute("y1", y1);
+			line.setAttribute("x2", x2);
+			line.setAttribute("y2", y2);
+			line.setAttribute("stroke", tickColor);
+			line.setAttribute("stroke-width", 1);
+			innerCircleGroup.appendChild(line);
+		}
+
+		// ✅ 2️⃣ Outer circle: day ticks and day numbers
+		let dayOffset = 0;
+		let rawRotation = 0; // continuous, no snap
+		let snappedRotation = 0; // the last snapped value
+
+		daysInMonth.forEach((days, monthIndex) => {
+			for (let d = 1; d <= days; d++) {
+				const dayNumber = dayOffset + d;
+				const angle = (dayNumber / totalDays) * 2 * Math.PI - Math.PI / 2;
+
+				// Outer day tick: longer for multiples of 5, same width
+				const tickLength = d % 5 === 0 ? 15 : 10; // 15px for 5s, 10px otherwise
+				const x1 = cx + 145 * Math.cos(angle);
+				const y1 = cy + 145 * Math.sin(angle);
+				const x2 = cx + (145 + tickLength) * Math.cos(angle);
+				const y2 = cy + (145 + tickLength) * Math.sin(angle);
+
+				const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+				line.setAttribute("x1", x1);
+				line.setAttribute("y1", y1);
+				line.setAttribute("x2", x2);
+				line.setAttribute("y2", y2);
+				line.setAttribute("stroke", "#000");
+				line.setAttribute("stroke-width", 1); // always thin
+				svg.appendChild(line);
+
+				// Day number every 5 days, placed a bit outside the tick
+				if (d % 5 === 0) {
+					const tx = cx + 165 * Math.cos(angle);
+					const ty = cy + 165 * Math.sin(angle);
+					const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+					text.setAttribute("x", tx);
+					text.setAttribute("y", ty);
+					text.setAttribute("text-anchor", "middle");
+					text.setAttribute("dominant-baseline", "middle");
+					text.setAttribute("font-size", "8");
+					text.textContent = d;
+					svg.appendChild(text);
+				}
+			}
+
+			// ✅ Draw line between months
+			const monthStartDay = dayOffset; // current offset before adding this month
+			const angle = (monthStartDay / totalDays) * 2 * Math.PI - Math.PI / 2;
+
+			const mx1 = cx + 155 * Math.cos(angle); // outer edge of day ticks
+			const my1 = cy + 155 * Math.sin(angle);
+			const mx2 = cx + 180 * Math.cos(angle); // reaches to the outer edge of month labels
+			const my2 = cy + 180 * Math.sin(angle);
+
+			const monthLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+			monthLine.setAttribute("x1", mx1);
+			monthLine.setAttribute("y1", my1);
+			monthLine.setAttribute("x2", mx2);
+			monthLine.setAttribute("y2", my2);
+			monthLine.setAttribute("stroke", "#333");
+			monthLine.setAttribute("stroke-width", 2);
+			svg.appendChild(monthLine);
+
+			// ✅ Outer month names at the far rim
+			const monthStart = dayOffset;
+			const monthEnd = dayOffset + days;
+			const midDay = (monthStart + monthEnd) / 2;
+			const midAngle = (midDay / totalDays) * 2 * Math.PI - Math.PI / 2;
+			const mx = cx + 180 * Math.cos(midAngle);
+			const my = cy + 180 * Math.sin(midAngle);
+
+			const monthText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			monthText.setAttribute("x", mx);
+			monthText.setAttribute("y", my);
+			monthText.setAttribute("text-anchor", "middle");
+			monthText.setAttribute("dominant-baseline", "middle");
+			monthText.setAttribute("font-size", "10");
+			monthText.textContent = monthNames[monthIndex];
+			svg.appendChild(monthText);
+
+			dayOffset += days;
+		});
+		let isDragging = false;
+		let lastAngle = 0;
+
+		// Mouse events
+		svg.addEventListener("mousedown", startDrag);
+		svg.addEventListener("mousemove", drag);
+		svg.addEventListener("mouseup", endDrag);
+		svg.addEventListener("mouseleave", endDrag);
+
+		// Touch events
+		svg.addEventListener("touchstart", startDragTouch, { passive: false });
+		svg.addEventListener("touchmove", dragTouch, { passive: false });
+		svg.addEventListener("touchend", endDrag);
+
+		function getAngle(clientX, clientY) {
+			const rect = svg.getBoundingClientRect();
+			const x = clientX - rect.left - cx;
+			const y = clientY - rect.top - cy;
+			return Math.atan2(y, x);
+		}
+
+		function startDrag(event) {
+			isDragging = true;
+			lastAngle = getAngle(event.clientX, event.clientY);
+		}
+
+		function startDragTouch(event) {
+			if (event.touches.length === 1) {
+				isDragging = true;
+				lastAngle = getAngle(event.touches[0].clientX, event.touches[0].clientY);
+				event.preventDefault();
+			}
+		}
+
+		function drag(event) {
+			if (!isDragging) return;
+			const angle = getAngle(event.clientX, event.clientY);
+			const delta = angle - lastAngle;
+			lastAngle = angle;
+			rotateInner(delta);
+		}
+
+		function dragTouch(event) {
+			if (!isDragging || event.touches.length !== 1) return;
+			const angle = getAngle(event.touches[0].clientX, event.touches[0].clientY);
+			const delta = angle - lastAngle;
+			lastAngle = angle;
+			rotateInner(delta);
+			event.preventDefault();
+		}
+
+		function endDrag() {
+			isDragging = false;
+		}
+
+		function rotateInner(delta) {
+			const deltaDegrees = delta * 180 / Math.PI;
+			rawRotation += deltaDegrees;
+
+			const degreesPerWeek = (1 / 365) * 360;
+
+			// Snap only when crossing threshold
+			const newSnapped = Math.round(rawRotation / degreesPerWeek) * degreesPerWeek;
+
+			// Only update if changed
+			if (newSnapped !== snappedRotation) {
+				snappedRotation = newSnapped;
+				innerCircleGroup.setAttribute("transform", `rotate(${snappedRotation} ${cx} ${cy})`);
+
+				// Keep labels upright
+				const texts = innerCircleGroup.querySelectorAll("text");
+				texts.forEach(text => {
+					const baseAngle = parseFloat(text.dataset.baseAngle);
+					const x = cx + 120 * Math.cos(baseAngle);
+					const y = cy + 120 * Math.sin(baseAngle);
+					text.setAttribute("x", x);
+					text.setAttribute("y", y);
+					text.setAttribute("transform", `rotate(${-snappedRotation} ${x} ${y})`);
+				});
+			}
+		}
+
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function() {
+				navigator.serviceWorker.register('/ucal/sw.js')
+					.then(function(registration) {
+						console.log('ServiceWorker registered: ', registration);
+					}, function(err) {
+						console.log('ServiceWorker registration failed: ', err);
+					});
+			});
+		}
+	</script>
+
 
 </body>
+
 </html>
