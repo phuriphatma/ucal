@@ -1,0 +1,105 @@
+192.168.1.94 - - [16/Aug/2025 16:50:43] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 16:50:43] "GET /calculator.js HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 16:50:43] code 404, message File not found
+192.168.1.94 - - [16/Aug/2025 16:50:43] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.1.94 - - [16/Aug/2025 16:54:15] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 16:54:15] "GET /calculator.js HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 16:54:22] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 16:54:26] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 16:54:31] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 16:54:52] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 16:55:01] "GET / HTTP/1.1" 304 -
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py", line 1320, in <module>
+    test(
+    ~~~~^
+        HandlerClass=handler_class,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        protocol=args.protocol,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py", line 1267, in test
+    with ServerClass(addr, HandlerClass) as httpd:
+         ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socketserver.py", line 457, in __init__
+    self.server_bind()
+    ~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py", line 1314, in server_bind
+    return super().server_bind()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py", line 136, in server_bind
+    socketserver.TCPServer.server_bind(self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 48] Address already in use
+192.168.1.94 - - [16/Aug/2025 16:55:42] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 16:59:22] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 16:59:22] "GET /calculator.js HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:15:38] code 404, message File not found
+192.168.1.94 - - [16/Aug/2025 17:15:38] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.1.94 - - [16/Aug/2025 17:15:39] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:15:39] "GET /calculator.js HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:15:50] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:16:07] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:17:53] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:19:19] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:22:56] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:22:56] "GET /calculator.js HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:24:16] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:25:46] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:26:34] code 404, message File not found
+192.168.1.94 - - [16/Aug/2025 17:26:34] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.1.94 - - [16/Aug/2025 17:35:04] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:35:04] "GET /calculator.js HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:35:44] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:36:31] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('192.168.1.94', 39640)
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py", line 1317, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                             directory=args.directory)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py", line 672, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py", line 436, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [Errno 54] Connection reset by peer
+----------------------------------------
+192.168.1.94 - - [16/Aug/2025 17:42:02] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:42:02] "GET /calculator.js HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:43:25] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:43:27] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:43:34] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:44:34] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:44:36] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:44:59] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:45:07] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:45:12] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:45:42] "GET / HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:46:57] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:48:43] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:48:44] "GET /calculator.js HTTP/1.1" 304 -
+192.168.1.94 - - [16/Aug/2025 17:51:03] "GET / HTTP/1.1" 200 -
+192.168.1.94 - - [16/Aug/2025 17:51:45] "GET / HTTP/1.1" 200 -

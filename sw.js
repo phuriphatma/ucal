@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v1.4.0"; // Fixed average display scrolling
+const CACHE_NAME = "ucal-v1.5.0"; // Comprehensive mobile keyboard fix
 const urlsToCache = [
   "/",
   "/index.html",

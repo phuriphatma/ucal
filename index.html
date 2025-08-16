@@ -3,7 +3,7 @@
 
 <head>
 	<title>GA Calculator</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
 	<meta name="theme-color" content="#007cba">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -29,23 +29,46 @@
 
 		/* Mobile viewport fix for keyboard */
 		@media (max-width: 768px) {
+			html, body {
+				height: 100vh;
+				height: 100dvh; /* Dynamic viewport height */
+				overflow-x: hidden;
+			}
+			
 			body {
 				padding: 10px;
+				padding-bottom: 50px; /* Reduced from previous excessive padding */
 			}
 			
 			.average-result {
-				position: sticky;
-				top: 10px;
-				z-index: 100;
-				margin-bottom: 10px;
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 1000;
+				margin: 0;
+				padding: 15px 10px;
+				background: #e3f2fd;
+				border-radius: 0 0 8px 8px;
+				box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 			}
 			
 			.tab-container {
+				margin-top: 80px; /* Space for fixed average result */
 				margin-bottom: 10px;
+			}
+			
+			.average-inputs {
+				margin: 10px 0;
+			}
+			
+			.input-row {
+				margin: 5px 0;
 			}
 			
 			input {
 				font-size: 16px; /* Prevents zoom on iOS */
+				padding: 12px;
 			}
 		}
 
@@ -399,8 +422,11 @@
 
 					<button onclick="resetSettings()" class="reset-settings-btn">Reset to Defaults</button>
 					
+					<button onclick="forceRefresh()" class="reset-settings-btn" style="background: #4CAF50; margin-top: 10px;">Force Refresh App</button>
+					
 					<div class="settings-info">
 						<p><strong>Note:</strong> Settings are saved in your browser and will be remembered when you return to the calculator.</p>
+						<p><strong>Force Refresh:</strong> Use this button to get the latest version of the app from GitHub.</p>
 					</div>
 				</div>
 			</div>
@@ -483,6 +509,32 @@
 			updateDecimalPrecisionUI(1);
 			calculateAverage();
 			setInitialTab('ga-calculator');
+		}
+
+		function forceRefresh() {
+			// Clear all caches and force reload from server
+			if ('serviceWorker' in navigator && 'caches' in window) {
+				caches.keys().then(function(cacheNames) {
+					return Promise.all(
+						cacheNames.map(function(cacheName) {
+							return caches.delete(cacheName);
+						})
+					);
+				}).then(function() {
+					// Unregister service worker
+					navigator.serviceWorker.getRegistrations().then(function(registrations) {
+						for(let registration of registrations) {
+							registration.unregister();
+						}
+					}).then(function() {
+						// Force reload with cache bypass
+						window.location.reload(true);
+					});
+				});
+			} else {
+				// Fallback for browsers without service worker support
+				window.location.reload(true);
+			}
 		}
 
 		function setInitialTab(tabId) {
@@ -766,7 +818,41 @@
 		function handleInputFocus(event) {
 			const input = event.target;
 			// Removed auto-scroll - average stays at top position
+			
+			// For mobile, ensure the average remains visible
+			if (window.innerWidth <= 768) {
+				setTimeout(() => {
+					const averageEl = document.getElementById('average-result');
+					if (averageEl) {
+						averageEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+					}
+				}, 100);
+			}
 		}
+		
+		// Handle viewport changes for mobile keyboard
+		let initialViewportHeight = window.innerHeight;
+		
+		function handleViewportChange() {
+			const currentHeight = window.innerHeight;
+			const heightDifference = initialViewportHeight - currentHeight;
+			
+			// If height decreased significantly (keyboard opened)
+			if (heightDifference > 150 && window.innerWidth <= 768) {
+				document.body.style.height = `${currentHeight}px`;
+			} else {
+				document.body.style.height = '';
+			}
+		}
+		
+		// Listen for viewport changes (mobile keyboard)
+		window.addEventListener('resize', handleViewportChange);
+		window.addEventListener('orientationchange', () => {
+			setTimeout(() => {
+				initialViewportHeight = window.innerHeight;
+				handleViewportChange();
+			}, 500);
+		});
 
 		// Calculate and display average
 		function calculateAverage() {
