@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v1.9.0"; // Fix offline functionality for GitHub Pages
+const CACHE_NAME = "ucal-v2.0.0"; // Improve UI clarity and add bug reporting
 const urlsToCache = [
   "./",
   "./index.html",
