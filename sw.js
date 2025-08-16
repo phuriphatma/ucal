@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v1.3.0"; // Updated version for average calculator
+const CACHE_NAME = "ucal-v1.4.0"; // Fixed average display scrolling
 const urlsToCache = [
   "/",
   "/index.html",
