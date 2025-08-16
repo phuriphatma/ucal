@@ -570,7 +570,6 @@
 	<!-- Average Calculator JavaScript -->
 	<script>
 		let decimalPrecision = 1; // Default to 1 decimal
-		let inputCount = 0;
 		let defaultBoxCount = 3;
 
 		// Settings management
@@ -844,7 +843,7 @@
 			clearBtn.onclick = () => clearInput(index);
 
 			const removeBtn = document.createElement('button');
-			removeBtn.textContent = '×';
+			removeBtn.innerHTML = '&times;';
 			removeBtn.className = 'remove-input';
 			removeBtn.onclick = () => removeInput(index);
 
@@ -862,9 +861,12 @@
 
 		function addInput() {
 			const container = document.getElementById('average-inputs');
-			const row = createInputRow(inputCount);
+			// Find the next available index by counting current boxes
+			const currentRows = container.querySelectorAll('.input-row');
+			const nextIndex = currentRows.length;
+			
+			const row = createInputRow(nextIndex);
 			container.appendChild(row);
-			inputCount++;
 
 			// Update remove button visibility
 			updateRemoveButtons();
@@ -875,6 +877,8 @@
 			const row = container.querySelector(`[data-index="${index}"]`);
 			if (row) {
 				row.remove();
+				// Renumber remaining inputs to maintain sequential numbering
+				renumberInputs();
 				calculateAverage();
 				updateRemoveButtons();
 			}
@@ -912,6 +916,9 @@
 				allRows[i].remove();
 			}
 
+			// Renumber the remaining boxes to be sequential (0, 1, 2, etc.)
+			renumberInputs();
+
 			// Update remove button visibility
 			updateRemoveButtons();
 			calculateAverage();
@@ -923,6 +930,29 @@
 			}
 		}
 
+		function renumberInputs() {
+			const container = document.getElementById('average-inputs');
+			const rows = container.querySelectorAll('.input-row');
+			
+			rows.forEach((row, newIndex) => {
+				// Update the row's data-index
+				row.dataset.index = newIndex;
+				
+				// Update the input's data-index and placeholder
+				const input = row.querySelector('input');
+				if (input) {
+					input.dataset.index = newIndex;
+					input.placeholder = `Number ${newIndex + 1}`;
+				}
+				
+				// Update the remove button's onclick handler
+				const removeBtn = row.querySelector('.remove-input');
+				if (removeBtn) {
+					removeBtn.onclick = () => removeInput(newIndex);
+				}
+			});
+		}
+
 		function updateRemoveButtons() {
 			const rows = document.querySelectorAll('.input-row');
 			rows.forEach(row => {
@@ -931,7 +961,7 @@
 				if (rows.length > defaultBoxCount) {
 					if (!removeBtn) {
 						removeBtn = document.createElement('button');
-						removeBtn.textContent = '×';
+						removeBtn.innerHTML = '&times;';
 						removeBtn.className = 'remove-input';
 						removeBtn.onclick = () => removeInput(parseInt(row.dataset.index));
 						row.appendChild(removeBtn);
