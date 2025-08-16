@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Settings - ucal</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
+	<meta name="theme-color" content="#6c757d">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="apple-mobile-web-app-title" content="Settings">
+	<link rel="manifest" href="manifest-settings.json">
+	<link rel="icon" type="image/svg+xml" href="icon.svg">
+</head>
+<body>
+	<script>
+		// Redirect to main app but start on Settings tab
+		const url = new URL(window.location);
+		url.pathname = '/ucal/index.html';
+		url.hash = '#tab=settings';
+		window.location.replace(url.toString());
+	</script>
+	
+	<!-- Fallback for users with JavaScript disabled -->
+	<noscript>
+		<meta http-equiv="refresh" content="0; url=index.html#tab=settings">
+	</noscript>
+	
+	<p>Redirecting to Settings...</p>
+</body>
+</html>

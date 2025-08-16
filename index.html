@@ -1132,7 +1132,38 @@
 			for (let i = 0; i < defaultBoxCount; i++) {
 				addInput();
 			}
+
+			// Handle URL hash for direct tab access
+			handleURLHash();
 		});
+
+		// Function to handle URL hash and switch to appropriate tab
+		function handleURLHash() {
+			const hash = window.location.hash;
+			if (hash.includes('#tab=')) {
+				const tabParam = new URLSearchParams(hash.substring(1));
+				const targetTab = tabParam.get('tab');
+				
+				if (targetTab && ['ga-calculator', 'average-calculator', 'settings'].includes(targetTab)) {
+					// Clear current tab states
+					document.querySelectorAll('.tab-content').forEach(content => {
+						content.classList.remove('active');
+					});
+					document.querySelectorAll('.tab-button').forEach(button => {
+						button.classList.remove('active');
+					});
+
+					// Activate target tab
+					document.getElementById(targetTab).classList.add('active');
+					
+					// Activate corresponding button
+					const buttons = document.querySelectorAll('.tab-button');
+					if (targetTab === 'ga-calculator') buttons[0].classList.add('active');
+					else if (targetTab === 'average-calculator') buttons[1].classList.add('active');
+					else if (targetTab === 'settings') buttons[2].classList.add('active');
+				}
+			}
+		}
 	</script>
 
 	<!-- Flatpickr JS -->
