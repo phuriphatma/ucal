@@ -18,6 +18,10 @@
 			margin: auto;
 			position: relative;
 			min-height: 100vh;
+			/* Improve scroll behavior */
+			scroll-behavior: smooth;
+			/* Prevent scroll anchoring issues */
+			overflow-anchor: none;
 		}
 
 		input,
@@ -39,15 +43,21 @@
 				overflow-x: hidden;
 				margin: 0;
 				padding: 0;
+				/* Fix smooth scrolling to top */
+				scroll-behavior: smooth;
 			}
 
 			body {
 				padding: 0;
+				/* Remove any potential scroll barriers */
+				position: relative;
 			}
 
 			.tab-container {
 				padding: 10px;
 				padding-bottom: 50px;
+				/* Ensure smooth scrolling within container */
+				scroll-behavior: smooth;
 			}
 
 			/* Special mobile average display - very distinct */
@@ -67,6 +77,8 @@
 				border-bottom: 3px solid #333;
 				display: none;
 				animation: slideDown 0.3s ease-out;
+				/* Prevent scroll interference */
+				pointer-events: none;
 			}
 
 

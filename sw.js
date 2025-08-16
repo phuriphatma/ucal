@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v1.6.0"; // Distinct mobile average display
+const CACHE_NAME = "ucal-v1.7.0"; // Mobile scroll fix and tab button padding
 const urlsToCache = [
   "/",
   "/index.html",
