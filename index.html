@@ -765,14 +765,7 @@
 		// Mobile keyboard handling
 		function handleInputFocus(event) {
 			const input = event.target;
-			
-			// On mobile, scroll the average display into view when input is focused
-			setTimeout(() => {
-				const averageResult = document.getElementById('average-result');
-				if (averageResult && window.innerWidth <= 768) {
-					averageResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
-				}
-			}, 300); // Wait for keyboard to appear
+			// Removed auto-scroll - average stays at top position
 		}
 
 		// Calculate and display average
