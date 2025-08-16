@@ -3,13 +3,20 @@
 
 <head>
 	<title>GA Calculator</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="theme-color" content="#007cba">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="apple-mobile-web-app-title" content="ucal">
+	<link rel="manifest" href="manifest.json">
 	<style>
 		body {
 			font-family: sans-serif;
 			padding: 20px;
 			max-width: 1200px;
 			margin: auto;
+			position: relative;
+			min-height: 100vh;
 		}
 
 		input,
@@ -18,6 +25,28 @@
 			padding: 10px;
 			margin: 10px 0;
 			font-size: 16px;
+		}
+
+		/* Mobile viewport fix for keyboard */
+		@media (max-width: 768px) {
+			body {
+				padding: 10px;
+			}
+			
+			.average-result {
+				position: sticky;
+				top: 10px;
+				z-index: 100;
+				margin-bottom: 10px;
+			}
+			
+			.tab-container {
+				margin-bottom: 10px;
+			}
+			
+			input {
+				font-size: 16px; /* Prevents zoom on iOS */
+			}
 		}
 
 		h2 {
@@ -44,7 +73,6 @@
 			flex: 1 1 300px;
 		}
 
-
 		#pregnancy-wheel-container {
 			position: relative;
 			width: 400px;
@@ -55,6 +83,171 @@
 		#pregnancy-wheel {
 			display: block;
 		}
+
+		/* Tab styles */
+		.tab-container {
+			margin-bottom: 20px;
+		}
+
+		.tab-buttons {
+			display: flex;
+			gap: 0;
+			margin-bottom: 20px;
+		}
+
+		.tab-button {
+			flex: 1;
+			padding: 15px;
+			background: #f0f0f0;
+			border: 1px solid #ccc;
+			cursor: pointer;
+			transition: background-color 0.3s;
+			margin: 0;
+		}
+
+		.tab-button.active {
+			background: #007cba;
+			color: white;
+		}
+
+		.tab-button:hover {
+			background: #e0e0e0;
+		}
+
+		.tab-button.active:hover {
+			background: #005a87;
+		}
+
+		.tab-content {
+			display: none;
+		}
+
+		.tab-content.active {
+			display: block;
+		}
+
+		/* Average calculator specific styles */
+		.decimal-buttons {
+			display: flex;
+			gap: 10px;
+			margin: 15px 0;
+		}
+
+		.decimal-button {
+			flex: 1;
+			padding: 8px;
+			background: #f5f5f5;
+			border: 1px solid #ccc;
+			cursor: pointer;
+			font-size: 14px;
+			margin: 0;
+		}
+
+		.decimal-button.active {
+			background: #28a745;
+			color: white;
+		}
+
+		.average-inputs {
+			margin: 20px 0;
+		}
+
+		.input-row {
+			display: flex;
+			align-items: center;
+			margin: 10px 0;
+			gap: 10px;
+		}
+
+		.input-row input {
+			flex: 1;
+			margin: 0;
+		}
+
+		.clear-input {
+			background: #ffc107;
+			color: #000;
+			border: none;
+			padding: 10px;
+			cursor: pointer;
+			width: auto;
+			min-width: 60px;
+			font-size: 12px;
+		}
+
+		.remove-input {
+			background: #dc3545;
+			color: white;
+			border: none;
+			padding: 10px;
+			cursor: pointer;
+			width: auto;
+			min-width: 40px;
+		}
+
+		.average-result {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: center;
+			padding: 20px;
+			background: #e3f2fd;
+			border-radius: 8px;
+			margin: 20px 0;
+		}
+
+		.control-buttons {
+			display: flex;
+			gap: 10px;
+			margin: 20px 0;
+		}
+
+		.add-input-btn {
+			background: #28a745;
+			color: white;
+			flex: 1;
+		}
+
+		.clear-all-btn {
+			background: #dc3545;
+			color: white;
+			flex: 1;
+		}
+
+		/* Settings tab styles */
+		.setting-item {
+			margin: 15px 0;
+		}
+
+		.setting-item label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+
+		.setting-item select {
+			width: 100%;
+			padding: 8px;
+			margin: 0;
+		}
+
+		.reset-settings-btn {
+			background: #6c757d;
+			color: white;
+			margin-top: 20px;
+		}
+
+		.settings-info {
+			background: #f8f9fa;
+			padding: 15px;
+			border-radius: 5px;
+			margin-top: 20px;
+		}
+
+		.settings-info p {
+			margin: 0;
+			font-size: 14px;
+			color: #6c757d;
+		}
 	</style>
 
 
@@ -64,59 +257,557 @@
 </head>
 
 <body>
-	<div class="container">
-		<div class="form-section">
-			<!-- your inputs and buttons go here -->
+	<!-- Tab Navigation -->
+	<div class="tab-container">
+		<div class="tab-buttons">
+			<button class="tab-button active" onclick="switchTab('ga-calculator')">GA Calculator</button>
+			<button class="tab-button" onclick="switchTab('average-calculator')">Average Calculator</button>
+			<button class="tab-button" onclick="switchTab('settings')">Settings</button>
+		</div>
+		
+		<!-- GA Calculator Tab -->
+		<div id="ga-calculator" class="tab-content active">
+			<div class="container">
+				<div class="form-section">
+					<h2>4-Box GA Calculator with LMP, EDC</h2>
 
+					<h3>LMP</h3>
+					<input type="date" id="lmp" placeholder="LMP (optional)">
 
-			<h2>4-Box GA Calculator with LMP, EDC</h2>
+					<h3>EDC</h3>
+					<input type="date" id="edc" placeholder="EDC (optional)">
 
+					<button onclick="clearLmpEdc()">Clear LMP / EDC</button>
 
+					<h3>Known Date / GA</h3>
+					<input type="date" id="dateA" placeholder="Date A (known GA)">
+					<input type="text" id="gaA" placeholder="GA on Date A (e.g. 10+3)">
 
-			<h3>LMP</h3>
-			<input type="date" id="lmp" placeholder="LMP (optional)">
+					<h3>Calculated Date / GA</h3>
+					<input type="date" id="dateB" placeholder="Date B (to find GA)">
+					<input type="text" id="gaB" placeholder="GA on Date B (e.g. 12+0)">
 
-			<h3>EDC</h3>
-			<input type="date" id="edc" placeholder="EDC (optional)">
+					<button onclick="calculate()">Calculate</button>
 
-			<button onclick="clearLmpEdc()">Clear LMP / EDC</button>
+					<pre id="output"></pre>
+				</div>
 
-			<h3>Known Date / GA</h3>
-			<input type="date" id="dateA" placeholder="Date A (known GA)">
-			<input type="text" id="gaA" placeholder="GA on Date A (e.g. 10+3)">
+				<div class="calendar-section">
+					<h3>Calendar View</h3>
+					<div id="calendar"></div>
 
-			<h3>Calculated Date / GA</h3>
-			<input type="date" id="dateB" placeholder="Date B (to find GA)">
-			<input type="text" id="gaB" placeholder="GA on Date B (e.g. 12+0)">
-
-			<button onclick="calculate()">Calculate</button>
-
-			<pre id="output"></pre>
+					<h3>Pregnancy Wheel</h3>
+					<div id="pregnancy-wheel-container">
+						<svg id="pregnancy-wheel" width="400" height="400" viewBox="0 0 400 400">
+							<!-- Outer circle -->
+							<circle cx="200" cy="200" r="180" stroke="#333" stroke-width="2" fill="none"></circle>
+							<!-- Inner circle (rotatable) -->
+							<g id="inner-circle">
+								<circle cx="200" cy="200" r="140" stroke="#666" stroke-width="2" fill="none"></circle>
+							</g>
+						</svg>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div class="calendar-section">
-			<h3>Calendar View</h3>
-			<div id="calendar"></div>
+		<!-- Average Calculator Tab -->
+		<div id="average-calculator" class="tab-content">
+			<div class="container">
+				<div class="form-section">
+					<h2>Average Calculator</h2>
+					
+					<!-- Average display at the top -->
+					<div id="average-result" class="average-result">
+						Average: 0
+					</div>
+					
+					<h3>Decimal Precision</h3>
+					<div class="decimal-buttons">
+						<button class="decimal-button" onclick="setDecimalPrecision(0)">0 decimal</button>
+						<button class="decimal-button active" onclick="setDecimalPrecision(1)">1 decimal</button>
+						<button class="decimal-button" onclick="setDecimalPrecision(2)">2+ decimal</button>
+					</div>
 
-			<h3>Pregnancy Wheel</h3>
-			<div id="pregnancy-wheel-container">
-				<svg id="pregnancy-wheel" width="400" height="400" viewBox="0 0 400 400">
-					<!-- Outer circle -->
-					<circle cx="200" cy="200" r="180" stroke="#333" stroke-width="2" fill="none"></circle>
-					<!-- Inner circle (rotatable) -->
-					<g id="inner-circle">
-						<circle cx="200" cy="200" r="140" stroke="#666" stroke-width="2" fill="none"></circle>
-					</g>
-				</svg>
+					<div id="decimal-selector" style="display: none; margin: 10px 0;">
+						<label for="decimal-count">Number of decimals: </label>
+						<select id="decimal-count" onchange="updateDecimalPrecision()">
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
+					</div>
+
+					<h3>Numbers</h3>
+					<div class="control-buttons">
+						<button class="add-input-btn" onclick="addInput()">Add More Box</button>
+						<button class="clear-all-btn" onclick="clearAllInputs()">Clear All</button>
+					</div>
+					
+					<div id="average-inputs" class="average-inputs">
+						<!-- Dynamic inputs will be added here -->
+					</div>
+				</div>
 			</div>
+		</div>
 
+		<!-- Settings Tab -->
+		<div id="settings" class="tab-content">
+			<div class="container">
+				<div class="form-section">
+					<h2>Settings</h2>
+					
+					<h3>Default Number of Input Boxes</h3>
+					<div class="setting-item">
+						<label for="default-boxes">Default boxes when opening Average Calculator:</label>
+						<select id="default-boxes" onchange="saveSettings()">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3" selected>3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+						</select>
+					</div>
 
+					<h3>Default Decimal Precision</h3>
+					<div class="setting-item">
+						<label for="default-precision">Default precision:</label>
+						<select id="default-precision" onchange="saveSettings()">
+							<option value="0">0 decimal</option>
+							<option value="1" selected>1 decimal</option>
+							<option value="2">2 decimals</option>
+							<option value="3">3 decimals</option>
+							<option value="4">4 decimals</option>
+							<option value="5">5 decimals</option>
+						</select>
+					</div>
 
+					<h3>Default Starting Tab</h3>
+					<div class="setting-item">
+						<label for="default-tab">Tab to show when app opens:</label>
+						<select id="default-tab" onchange="saveSettings()">
+							<option value="ga-calculator" selected>GA Calculator</option>
+							<option value="average-calculator">Average Calculator</option>
+						</select>
+					</div>
 
+					<button onclick="resetSettings()" class="reset-settings-btn">Reset to Defaults</button>
+					
+					<div class="settings-info">
+						<p><strong>Note:</strong> Settings are saved in your browser and will be remembered when you return to the calculator.</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
 	<script src="calculator.js"></script>
+
+	<!-- Average Calculator JavaScript -->
+	<script>
+		let decimalPrecision = 1; // Default to 1 decimal
+		let inputCount = 0;
+		let defaultBoxCount = 3;
+
+		// Settings management
+		let defaultStartingTab = 'ga-calculator';
+
+		function loadSettings() {
+			const savedBoxCount = localStorage.getItem('ucal-default-boxes');
+			const savedPrecision = localStorage.getItem('ucal-default-precision');
+			const savedStartingTab = localStorage.getItem('ucal-default-tab');
+			
+			if (savedBoxCount) {
+				defaultBoxCount = parseInt(savedBoxCount);
+				document.getElementById('default-boxes').value = defaultBoxCount;
+			}
+			
+			if (savedPrecision) {
+				const precision = parseInt(savedPrecision);
+				decimalPrecision = precision;
+				document.getElementById('default-precision').value = precision;
+				
+				// Update UI to reflect saved precision
+				updateDecimalPrecisionUI(precision);
+			}
+
+			if (savedStartingTab) {
+				defaultStartingTab = savedStartingTab;
+				document.getElementById('default-tab').value = defaultStartingTab;
+				
+				// Set the starting tab
+				setInitialTab(defaultStartingTab);
+			}
+		}
+
+		function saveSettings() {
+			const boxCount = parseInt(document.getElementById('default-boxes').value);
+			const precision = parseInt(document.getElementById('default-precision').value);
+			const startingTab = document.getElementById('default-tab').value;
+			
+			localStorage.setItem('ucal-default-boxes', boxCount);
+			localStorage.setItem('ucal-default-precision', precision);
+			localStorage.setItem('ucal-default-tab', startingTab);
+			
+			defaultBoxCount = boxCount;
+			decimalPrecision = precision;
+			defaultStartingTab = startingTab;
+			
+			// Update average calculator if it's currently active
+			const avgTab = document.getElementById('average-calculator');
+			if (avgTab.classList.contains('active')) {
+				updateDecimalPrecisionUI(precision);
+				calculateAverage();
+			}
+		}
+
+		function resetSettings() {
+			localStorage.removeItem('ucal-default-boxes');
+			localStorage.removeItem('ucal-default-precision');
+			localStorage.removeItem('ucal-default-tab');
+			
+			defaultBoxCount = 3;
+			decimalPrecision = 1;
+			defaultStartingTab = 'ga-calculator';
+			
+			document.getElementById('default-boxes').value = defaultBoxCount;
+			document.getElementById('default-precision').value = decimalPrecision;
+			document.getElementById('default-tab').value = defaultStartingTab;
+			
+			updateDecimalPrecisionUI(1);
+			calculateAverage();
+			setInitialTab('ga-calculator');
+		}
+
+		function setInitialTab(tabId) {
+			// Hide all tab contents
+			document.querySelectorAll('.tab-content').forEach(content => {
+				content.classList.remove('active');
+			});
+			
+			// Remove active class from all buttons
+			document.querySelectorAll('.tab-button').forEach(button => {
+				button.classList.remove('active');
+			});
+			
+			// Show selected tab
+			document.getElementById(tabId).classList.add('active');
+			
+			// Add active class to corresponding button
+			const buttons = document.querySelectorAll('.tab-button');
+			if (tabId === 'ga-calculator') {
+				buttons[0].classList.add('active');
+			} else if (tabId === 'average-calculator') {
+				buttons[1].classList.add('active');
+			}
+		}
+
+		function updateDecimalPrecisionUI(precision) {
+			// Update decimal buttons
+			document.querySelectorAll('.decimal-button').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			
+			const buttons = document.querySelectorAll('.decimal-button');
+			if (precision === 0) {
+				buttons[0].classList.add('active');
+				document.getElementById('decimal-selector').style.display = 'none';
+			} else if (precision === 1) {
+				buttons[1].classList.add('active');
+				document.getElementById('decimal-selector').style.display = 'none';
+			} else {
+				buttons[2].classList.add('active');
+				document.getElementById('decimal-selector').style.display = 'block';
+				document.getElementById('decimal-count').value = precision;
+			}
+		}
+
+		// Tab switching functionality
+		function switchTab(tabId) {
+			// Hide all tab contents
+			document.querySelectorAll('.tab-content').forEach(content => {
+				content.classList.remove('active');
+			});
+			
+			// Remove active class from all buttons
+			document.querySelectorAll('.tab-button').forEach(button => {
+				button.classList.remove('active');
+			});
+			
+			// Show selected tab
+			document.getElementById(tabId).classList.add('active');
+			
+			// Add active class to clicked button
+			event.target.classList.add('active');
+		}
+
+		// Decimal precision functionality
+		function setDecimalPrecision(precision) {
+			// Update button states
+			document.querySelectorAll('.decimal-button').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			event.target.classList.add('active');
+			
+			if (precision === 2) {
+				// Show selector for 2+ decimals
+				document.getElementById('decimal-selector').style.display = 'block';
+				decimalPrecision = parseInt(document.getElementById('decimal-count').value);
+			} else {
+				// Hide selector and set precision
+				document.getElementById('decimal-selector').style.display = 'none';
+				decimalPrecision = precision;
+			}
+			
+			updateAllInputBehavior();
+			calculateAverage();
+		}
+
+		function updateDecimalPrecision() {
+			decimalPrecision = parseInt(document.getElementById('decimal-count').value);
+			updateAllInputBehavior();
+			calculateAverage();
+		}
+
+		// Input management
+		function createInputRow(index) {
+			const row = document.createElement('div');
+			row.className = 'input-row';
+			row.dataset.index = index;
+			
+			const input = document.createElement('input');
+			input.type = 'number';
+			input.inputMode = 'decimal';
+			input.step = 'any';
+			input.placeholder = `Number ${index + 1}`;
+			input.dataset.index = index;
+			input.addEventListener('input', handleInput);
+			input.addEventListener('keydown', handleKeydown);
+			input.addEventListener('paste', handlePaste);
+			input.addEventListener('focus', handleInputFocus);
+			
+			const clearBtn = document.createElement('button');
+			clearBtn.textContent = 'Clear';
+			clearBtn.className = 'clear-input';
+			clearBtn.onclick = () => clearInput(index);
+			
+			const removeBtn = document.createElement('button');
+			removeBtn.textContent = '×';
+			removeBtn.className = 'remove-input';
+			removeBtn.onclick = () => removeInput(index);
+			
+			row.appendChild(input);
+			row.appendChild(clearBtn);
+			
+			// Only show remove button if more than default box count
+			const currentInputCount = document.querySelectorAll('.input-row').length;
+			if (currentInputCount >= defaultBoxCount) {
+				row.appendChild(removeBtn);
+			}
+			
+			return row;
+		}
+
+		function addInput() {
+			const container = document.getElementById('average-inputs');
+			const row = createInputRow(inputCount);
+			container.appendChild(row);
+			inputCount++;
+			
+			// Update remove button visibility
+			updateRemoveButtons();
+		}
+
+		function removeInput(index) {
+			const container = document.getElementById('average-inputs');
+			const row = container.querySelector(`[data-index="${index}"]`);
+			if (row) {
+				row.remove();
+				calculateAverage();
+				updateRemoveButtons();
+			}
+		}
+
+		function clearInput(index) {
+			const input = document.querySelector(`input[data-index="${index}"]`);
+			if (input) {
+				input.value = '';
+				input.focus();
+				calculateAverage();
+			}
+		}
+
+		function clearAllInputs() {
+			const inputs = document.querySelectorAll('#average-inputs input');
+			inputs.forEach(input => {
+				input.value = '';
+			});
+			calculateAverage();
+			
+			// Focus on first input
+			const firstInput = document.querySelector('#average-inputs input');
+			if (firstInput) {
+				firstInput.focus();
+			}
+		}
+
+		function updateRemoveButtons() {
+			const rows = document.querySelectorAll('.input-row');
+			rows.forEach(row => {
+				let removeBtn = row.querySelector('.remove-input');
+				
+				if (rows.length > defaultBoxCount) {
+					if (!removeBtn) {
+						removeBtn = document.createElement('button');
+						removeBtn.textContent = '×';
+						removeBtn.className = 'remove-input';
+						removeBtn.onclick = () => removeInput(parseInt(row.dataset.index));
+						row.appendChild(removeBtn);
+					}
+				} else {
+					if (removeBtn) {
+						removeBtn.remove();
+					}
+				}
+			});
+		}
+
+		// Input behavior handling - removed automatic box addition
+		function handleInput(event) {
+			const input = event.target;
+			const value = input.value;
+			
+			// Check if we need to jump to next input (but don't auto-create)
+			if (decimalPrecision > 0) {
+				const dotIndex = value.indexOf('.');
+				if (dotIndex !== -1) {
+					const afterDot = value.substring(dotIndex + 1);
+					if (afterDot.length >= decimalPrecision) {
+						const nextInput = getNextInput(input);
+						if (nextInput) {
+							nextInput.focus();
+						}
+					}
+				}
+			} else {
+				// For 0 decimal precision, jump on any non-numeric input or when number is complete
+				if (value && !value.includes('.') && isValidNumber(value)) {
+					const nextInput = getNextInput(input);
+					if (nextInput) {
+						nextInput.focus();
+					}
+				}
+			}
+			
+			calculateAverage();
+		}
+
+		function handleKeydown(event) {
+			const input = event.target;
+			
+			// Handle backspace to previous input
+			if (event.key === 'Backspace' && input.selectionStart === 0 && input.value === '') {
+				const prevInput = getPreviousInput(input);
+				if (prevInput) {
+					prevInput.focus();
+					prevInput.setSelectionRange(prevInput.value.length, prevInput.value.length);
+				}
+			}
+		}
+
+		function handlePaste(event) {
+			event.preventDefault();
+			const pastedData = (event.clipboardData || window.clipboardData).getData('text');
+			const numbers = pastedData.split(/[\s,\n\t]+/).filter(s => s && isValidNumber(s));
+			
+			if (numbers.length > 0) {
+				const currentInput = event.target;
+				const startIndex = parseInt(currentInput.dataset.index);
+				
+				// Fill the inputs that exist
+				numbers.forEach((num, i) => {
+					const targetIndex = startIndex + i;
+					const targetInput = document.querySelector(`input[data-index="${targetIndex}"]`);
+					if (targetInput) {
+						targetInput.value = num;
+					}
+				});
+				
+				calculateAverage();
+			}
+		}
+
+		function getNextInput(currentInput) {
+			const currentIndex = parseInt(currentInput.dataset.index);
+			return document.querySelector(`input[data-index="${currentIndex + 1}"]`);
+		}
+
+		function getPreviousInput(currentInput) {
+			const currentIndex = parseInt(currentInput.dataset.index);
+			return document.querySelector(`input[data-index="${currentIndex - 1}"]`);
+		}
+
+		function updateAllInputBehavior() {
+			// This function can be used to update input validation based on decimal precision
+			calculateAverage();
+		}
+
+		function isValidNumber(str) {
+			return !isNaN(parseFloat(str)) && isFinite(str);
+		}
+
+		// Mobile keyboard handling
+		function handleInputFocus(event) {
+			const input = event.target;
+			
+			// On mobile, scroll the average display into view when input is focused
+			setTimeout(() => {
+				const averageResult = document.getElementById('average-result');
+				if (averageResult && window.innerWidth <= 768) {
+					averageResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
+			}, 300); // Wait for keyboard to appear
+		}
+
+		// Calculate and display average
+		function calculateAverage() {
+			const inputs = document.querySelectorAll('#average-inputs input');
+			const values = [];
+			
+			inputs.forEach(input => {
+				const value = parseFloat(input.value);
+				if (!isNaN(value)) {
+					values.push(value);
+				}
+			});
+			
+			let average = 0;
+			if (values.length > 0) {
+				const sum = values.reduce((acc, val) => acc + val, 0);
+				average = sum / values.length;
+			}
+			
+			// Show the true value without rounding for display
+			document.getElementById('average-result').textContent = `Average: ${average}`;
+		}
+
+		// Initialize average calculator when page loads
+		document.addEventListener('DOMContentLoaded', function() {
+			// Load settings first
+			loadSettings();
+			
+			// Add initial inputs based on settings
+			for (let i = 0; i < defaultBoxCount; i++) {
+				addInput();
+			}
+		});
+	</script>
 
 	<!-- Flatpickr JS -->
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -358,7 +1049,7 @@
 
 		if ('serviceWorker' in navigator) {
 			window.addEventListener('load', function() {
-				navigator.serviceWorker.register('/ucal/sw.js')
+				navigator.serviceWorker.register('/sw.js')
 					.then(function(registration) {
 						console.log('ServiceWorker registered: ', registration);
 					}, function(err) {
