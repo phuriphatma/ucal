@@ -3,7 +3,8 @@
 
 <head>
 	<title>GA Calculator</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
 	<meta name="theme-color" content="#007cba">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -29,45 +30,77 @@
 
 		/* Mobile viewport fix for keyboard */
 		@media (max-width: 768px) {
-			html, body {
-				height: 100vh;
-				height: 100dvh; /* Dynamic viewport height */
-				overflow-x: hidden;
-			}
-			
+
+			html,
 			body {
-				padding: 10px;
-				padding-bottom: 50px; /* Reduced from previous excessive padding */
+				height: 100vh;
+				height: 100dvh;
+				/* Dynamic viewport height */
+				overflow-x: hidden;
+				margin: 0;
+				padding: 0;
 			}
-			
-			.average-result {
+
+			body {
+				padding: 0;
+			}
+
+			.tab-container {
+				padding: 10px;
+				padding-bottom: 50px;
+			}
+
+			/* Special mobile average display - very distinct */
+			.mobile-average-bar {
 				position: fixed;
 				top: 0;
 				left: 0;
 				right: 0;
-				z-index: 1000;
-				margin: 0;
-				padding: 15px 10px;
-				background: #e3f2fd;
-				border-radius: 0 0 8px 8px;
-				box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+				z-index: 2000;
+				background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+				color: white;
+				padding: 8px 15px;
+				font-size: 18px;
+				font-weight: bold;
+				text-align: center;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+				border-bottom: 3px solid #333;
+				display: none;
+				animation: slideDown 0.3s ease-out;
 			}
-			
-			.tab-container {
-				margin-top: 80px; /* Space for fixed average result */
-				margin-bottom: 10px;
+
+
+			/* Show mobile average bar only on average calculator tab */
+			#average-calculator.active .mobile-average-bar {
+				display: block !important;
 			}
-			
+
+			/* Hide the regular average result on mobile */
+			#average-calculator .average-result {
+				display: none;
+			}
+
+			/* Push content down when average calculator is active */
+			#average-calculator.active {
+				padding-top: 0px;
+			}
+
+			/* Add padding to tab buttons on mobile */
+			.tab-buttons {
+				padding-top: 29px;
+			}
+
 			.average-inputs {
 				margin: 10px 0;
 			}
-			
+
 			.input-row {
 				margin: 5px 0;
 			}
-			
+
 			input {
-				font-size: 16px; /* Prevents zoom on iOS */
+				font-size: 16px;
+				/* Prevents zoom on iOS */
 				padding: 12px;
 			}
 		}
@@ -287,7 +320,7 @@
 			<button class="tab-button" onclick="switchTab('average-calculator')">Average Calculator</button>
 			<button class="tab-button" onclick="switchTab('settings')">Settings</button>
 		</div>
-		
+
 		<!-- GA Calculator Tab -->
 		<div id="ga-calculator" class="tab-content active">
 			<div class="container">
@@ -336,15 +369,20 @@
 
 		<!-- Average Calculator Tab -->
 		<div id="average-calculator" class="tab-content">
+			<!-- Mobile average bar - shown at top on mobile only -->
+			<div id="mobile-average-bar" class="mobile-average-bar">
+				Average: 0
+			</div>
+
 			<div class="container">
 				<div class="form-section">
 					<h2>Average Calculator</h2>
-					
+
 					<!-- Average display at the top -->
 					<div id="average-result" class="average-result">
 						Average: 0
 					</div>
-					
+
 					<h3>Decimal Precision</h3>
 					<div class="decimal-buttons">
 						<button class="decimal-button" onclick="setDecimalPrecision(0)">0 decimal</button>
@@ -367,7 +405,7 @@
 						<button class="add-input-btn" onclick="addInput()">Add More Box</button>
 						<button class="clear-all-btn" onclick="clearAllInputs()">Clear All</button>
 					</div>
-					
+
 					<div id="average-inputs" class="average-inputs">
 						<!-- Dynamic inputs will be added here -->
 					</div>
@@ -380,7 +418,7 @@
 			<div class="container">
 				<div class="form-section">
 					<h2>Settings</h2>
-					
+
 					<h3>Default Number of Input Boxes</h3>
 					<div class="setting-item">
 						<label for="default-boxes">Default boxes when opening Average Calculator:</label>
@@ -421,12 +459,15 @@
 					</div>
 
 					<button onclick="resetSettings()" class="reset-settings-btn">Reset to Defaults</button>
-					
-					<button onclick="forceRefresh()" class="reset-settings-btn" style="background: #4CAF50; margin-top: 10px;">Force Refresh App</button>
-					
+
+					<button onclick="forceRefresh()" class="reset-settings-btn"
+						style="background: #4CAF50; margin-top: 10px;">Force Refresh App</button>
+
 					<div class="settings-info">
-						<p><strong>Note:</strong> Settings are saved in your browser and will be remembered when you return to the calculator.</p>
-						<p><strong>Force Refresh:</strong> Use this button to get the latest version of the app from GitHub.</p>
+						<p><strong>Note:</strong> Settings are saved in your browser and will be remembered when you
+							return to the calculator.</p>
+						<p><strong>Force Refresh:</strong> Use this button to get the latest version of the app from
+							GitHub.</p>
 					</div>
 				</div>
 			</div>
@@ -448,17 +489,17 @@
 			const savedBoxCount = localStorage.getItem('ucal-default-boxes');
 			const savedPrecision = localStorage.getItem('ucal-default-precision');
 			const savedStartingTab = localStorage.getItem('ucal-default-tab');
-			
+
 			if (savedBoxCount) {
 				defaultBoxCount = parseInt(savedBoxCount);
 				document.getElementById('default-boxes').value = defaultBoxCount;
 			}
-			
+
 			if (savedPrecision) {
 				const precision = parseInt(savedPrecision);
 				decimalPrecision = precision;
 				document.getElementById('default-precision').value = precision;
-				
+
 				// Update UI to reflect saved precision
 				updateDecimalPrecisionUI(precision);
 			}
@@ -466,7 +507,7 @@
 			if (savedStartingTab) {
 				defaultStartingTab = savedStartingTab;
 				document.getElementById('default-tab').value = defaultStartingTab;
-				
+
 				// Set the starting tab
 				setInitialTab(defaultStartingTab);
 			}
@@ -476,15 +517,15 @@
 			const boxCount = parseInt(document.getElementById('default-boxes').value);
 			const precision = parseInt(document.getElementById('default-precision').value);
 			const startingTab = document.getElementById('default-tab').value;
-			
+
 			localStorage.setItem('ucal-default-boxes', boxCount);
 			localStorage.setItem('ucal-default-precision', precision);
 			localStorage.setItem('ucal-default-tab', startingTab);
-			
+
 			defaultBoxCount = boxCount;
 			decimalPrecision = precision;
 			defaultStartingTab = startingTab;
-			
+
 			// Update average calculator if it's currently active
 			const avgTab = document.getElementById('average-calculator');
 			if (avgTab.classList.contains('active')) {
@@ -497,15 +538,15 @@
 			localStorage.removeItem('ucal-default-boxes');
 			localStorage.removeItem('ucal-default-precision');
 			localStorage.removeItem('ucal-default-tab');
-			
+
 			defaultBoxCount = 3;
 			decimalPrecision = 1;
 			defaultStartingTab = 'ga-calculator';
-			
+
 			document.getElementById('default-boxes').value = defaultBoxCount;
 			document.getElementById('default-precision').value = decimalPrecision;
 			document.getElementById('default-tab').value = defaultStartingTab;
-			
+
 			updateDecimalPrecisionUI(1);
 			calculateAverage();
 			setInitialTab('ga-calculator');
@@ -514,19 +555,19 @@
 		function forceRefresh() {
 			// Clear all caches and force reload from server
 			if ('serviceWorker' in navigator && 'caches' in window) {
-				caches.keys().then(function(cacheNames) {
+				caches.keys().then(function (cacheNames) {
 					return Promise.all(
-						cacheNames.map(function(cacheName) {
+						cacheNames.map(function (cacheName) {
 							return caches.delete(cacheName);
 						})
 					);
-				}).then(function() {
+				}).then(function () {
 					// Unregister service worker
-					navigator.serviceWorker.getRegistrations().then(function(registrations) {
-						for(let registration of registrations) {
+					navigator.serviceWorker.getRegistrations().then(function (registrations) {
+						for (let registration of registrations) {
 							registration.unregister();
 						}
-					}).then(function() {
+					}).then(function () {
 						// Force reload with cache bypass
 						window.location.reload(true);
 					});
@@ -542,15 +583,15 @@
 			document.querySelectorAll('.tab-content').forEach(content => {
 				content.classList.remove('active');
 			});
-			
+
 			// Remove active class from all buttons
 			document.querySelectorAll('.tab-button').forEach(button => {
 				button.classList.remove('active');
 			});
-			
+
 			// Show selected tab
 			document.getElementById(tabId).classList.add('active');
-			
+
 			// Add active class to corresponding button
 			const buttons = document.querySelectorAll('.tab-button');
 			if (tabId === 'ga-calculator') {
@@ -565,7 +606,7 @@
 			document.querySelectorAll('.decimal-button').forEach(btn => {
 				btn.classList.remove('active');
 			});
-			
+
 			const buttons = document.querySelectorAll('.decimal-button');
 			if (precision === 0) {
 				buttons[0].classList.add('active');
@@ -586,15 +627,15 @@
 			document.querySelectorAll('.tab-content').forEach(content => {
 				content.classList.remove('active');
 			});
-			
+
 			// Remove active class from all buttons
 			document.querySelectorAll('.tab-button').forEach(button => {
 				button.classList.remove('active');
 			});
-			
+
 			// Show selected tab
 			document.getElementById(tabId).classList.add('active');
-			
+
 			// Add active class to clicked button
 			event.target.classList.add('active');
 		}
@@ -606,7 +647,7 @@
 				btn.classList.remove('active');
 			});
 			event.target.classList.add('active');
-			
+
 			if (precision === 2) {
 				// Show selector for 2+ decimals
 				document.getElementById('decimal-selector').style.display = 'block';
@@ -616,7 +657,7 @@
 				document.getElementById('decimal-selector').style.display = 'none';
 				decimalPrecision = precision;
 			}
-			
+
 			updateAllInputBehavior();
 			calculateAverage();
 		}
@@ -632,7 +673,7 @@
 			const row = document.createElement('div');
 			row.className = 'input-row';
 			row.dataset.index = index;
-			
+
 			const input = document.createElement('input');
 			input.type = 'number';
 			input.inputMode = 'decimal';
@@ -643,26 +684,26 @@
 			input.addEventListener('keydown', handleKeydown);
 			input.addEventListener('paste', handlePaste);
 			input.addEventListener('focus', handleInputFocus);
-			
+
 			const clearBtn = document.createElement('button');
 			clearBtn.textContent = 'Clear';
 			clearBtn.className = 'clear-input';
 			clearBtn.onclick = () => clearInput(index);
-			
+
 			const removeBtn = document.createElement('button');
 			removeBtn.textContent = '×';
 			removeBtn.className = 'remove-input';
 			removeBtn.onclick = () => removeInput(index);
-			
+
 			row.appendChild(input);
 			row.appendChild(clearBtn);
-			
+
 			// Only show remove button if more than default box count
 			const currentInputCount = document.querySelectorAll('.input-row').length;
 			if (currentInputCount >= defaultBoxCount) {
 				row.appendChild(removeBtn);
 			}
-			
+
 			return row;
 		}
 
@@ -671,7 +712,7 @@
 			const row = createInputRow(inputCount);
 			container.appendChild(row);
 			inputCount++;
-			
+
 			// Update remove button visibility
 			updateRemoveButtons();
 		}
@@ -701,7 +742,7 @@
 				input.value = '';
 			});
 			calculateAverage();
-			
+
 			// Focus on first input
 			const firstInput = document.querySelector('#average-inputs input');
 			if (firstInput) {
@@ -713,7 +754,7 @@
 			const rows = document.querySelectorAll('.input-row');
 			rows.forEach(row => {
 				let removeBtn = row.querySelector('.remove-input');
-				
+
 				if (rows.length > defaultBoxCount) {
 					if (!removeBtn) {
 						removeBtn = document.createElement('button');
@@ -734,7 +775,7 @@
 		function handleInput(event) {
 			const input = event.target;
 			const value = input.value;
-			
+
 			// Check if we need to jump to next input (but don't auto-create)
 			if (decimalPrecision > 0) {
 				const dotIndex = value.indexOf('.');
@@ -756,13 +797,13 @@
 					}
 				}
 			}
-			
+
 			calculateAverage();
 		}
 
 		function handleKeydown(event) {
 			const input = event.target;
-			
+
 			// Handle backspace to previous input
 			if (event.key === 'Backspace' && input.selectionStart === 0 && input.value === '') {
 				const prevInput = getPreviousInput(input);
@@ -777,11 +818,11 @@
 			event.preventDefault();
 			const pastedData = (event.clipboardData || window.clipboardData).getData('text');
 			const numbers = pastedData.split(/[\s,\n\t]+/).filter(s => s && isValidNumber(s));
-			
+
 			if (numbers.length > 0) {
 				const currentInput = event.target;
 				const startIndex = parseInt(currentInput.dataset.index);
-				
+
 				// Fill the inputs that exist
 				numbers.forEach((num, i) => {
 					const targetIndex = startIndex + i;
@@ -790,7 +831,7 @@
 						targetInput.value = num;
 					}
 				});
-				
+
 				calculateAverage();
 			}
 		}
@@ -818,7 +859,7 @@
 		function handleInputFocus(event) {
 			const input = event.target;
 			// Removed auto-scroll - average stays at top position
-			
+
 			// For mobile, ensure the average remains visible
 			if (window.innerWidth <= 768) {
 				setTimeout(() => {
@@ -829,14 +870,14 @@
 				}, 100);
 			}
 		}
-		
+
 		// Handle viewport changes for mobile keyboard
 		let initialViewportHeight = window.innerHeight;
-		
+
 		function handleViewportChange() {
 			const currentHeight = window.innerHeight;
 			const heightDifference = initialViewportHeight - currentHeight;
-			
+
 			// If height decreased significantly (keyboard opened)
 			if (heightDifference > 150 && window.innerWidth <= 768) {
 				document.body.style.height = `${currentHeight}px`;
@@ -844,7 +885,7 @@
 				document.body.style.height = '';
 			}
 		}
-		
+
 		// Listen for viewport changes (mobile keyboard)
 		window.addEventListener('resize', handleViewportChange);
 		window.addEventListener('orientationchange', () => {
@@ -858,29 +899,32 @@
 		function calculateAverage() {
 			const inputs = document.querySelectorAll('#average-inputs input');
 			const values = [];
-			
+
 			inputs.forEach(input => {
 				const value = parseFloat(input.value);
 				if (!isNaN(value)) {
 					values.push(value);
 				}
 			});
-			
+
 			let average = 0;
 			if (values.length > 0) {
 				const sum = values.reduce((acc, val) => acc + val, 0);
 				average = sum / values.length;
 			}
-			
-			// Show the true value without rounding for display
-			document.getElementById('average-result').textContent = `Average: ${average}`;
+
+			const averageText = `Average: ${average}`;
+
+			// Update both regular and mobile average displays
+			document.getElementById('average-result').textContent = averageText;
+			document.getElementById('mobile-average-bar').textContent = averageText;
 		}
 
 		// Initialize average calculator when page loads
-		document.addEventListener('DOMContentLoaded', function() {
+		document.addEventListener('DOMContentLoaded', function () {
 			// Load settings first
 			loadSettings();
-			
+
 			// Add initial inputs based on settings
 			for (let i = 0; i < defaultBoxCount; i++) {
 				addInput();
@@ -1127,11 +1171,11 @@
 		}
 
 		if ('serviceWorker' in navigator) {
-			window.addEventListener('load', function() {
+			window.addEventListener('load', function () {
 				navigator.serviceWorker.register('/sw.js')
-					.then(function(registration) {
+					.then(function (registration) {
 						console.log('ServiceWorker registered: ', registration);
-					}, function(err) {
+					}, function (err) {
 						console.log('ServiceWorker registration failed: ', err);
 					});
 			});

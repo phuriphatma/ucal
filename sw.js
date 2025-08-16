@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v1.5.0"; // Comprehensive mobile keyboard fix
+const CACHE_NAME = "ucal-v1.6.0"; // Distinct mobile average display
 const urlsToCache = [
   "/",
   "/index.html",
