@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v1.7.0"; // Mobile scroll fix and tab button padding
+const CACHE_NAME = "ucal-v1.8.0"; // Add remove extra boxes button
 const urlsToCache = [
   "/",
   "/index.html",

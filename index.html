@@ -281,6 +281,12 @@
 			flex: 1;
 		}
 
+		.remove-extra-btn {
+			background: #fd7e14;
+			color: white;
+			flex: 1;
+		}
+
 		/* Settings tab styles */
 		.setting-item {
 			margin: 15px 0;
@@ -416,6 +422,7 @@
 					<div class="control-buttons">
 						<button class="add-input-btn" onclick="addInput()">Add More Box</button>
 						<button class="clear-all-btn" onclick="clearAllInputs()">Clear All</button>
+						<button class="remove-extra-btn" onclick="removeExtraInputs()">Remove Extra Boxes</button>
 					</div>
 
 					<div id="average-inputs" class="average-inputs">
@@ -755,6 +762,26 @@
 			});
 			calculateAverage();
 
+			// Focus on first input
+			const firstInput = document.querySelector('#average-inputs input');
+			if (firstInput) {
+				firstInput.focus();
+			}
+		}
+
+		function removeExtraInputs() {
+			const container = document.getElementById('average-inputs');
+			const allRows = container.querySelectorAll('.input-row');
+			
+			// Keep only the default number of boxes
+			for (let i = allRows.length - 1; i >= defaultBoxCount; i--) {
+				allRows[i].remove();
+			}
+			
+			// Update remove button visibility
+			updateRemoveButtons();
+			calculateAverage();
+			
 			// Focus on first input
 			const firstInput = document.querySelector('#average-inputs input');
 			if (firstInput) {
