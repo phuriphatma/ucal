@@ -366,23 +366,62 @@
 				<div class="form-section">
 					<h2>4-Box GA Calculator with LMP, EDC</h2>
 
+					<div
+						style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+						<div id="connection-status"
+							style="padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">
+							&#128241; Checking...
+						</div>
+						<button onclick="toggleInstructions()"
+							style="background: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6; border-radius: 4px; width: 24px; height: 24px; font-size: 12px; cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+							?
+						</button>
+					</div>
+
+					<div id="instructions"
+						style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 13px;">
+						<h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">How to Use:</h4>
+						<ul style="margin: 8px 0; padding-left: 18px; color: #6c757d;">
+							<li><strong>LMP/EDC:</strong> Enter Last Menstrual Period or Expected Date of Confinement
+								(optional)</li>
+							<li><strong>Known Date/GA:</strong> Enter a date where you know the exact gestational age
+							</li>
+							<li><strong>Calculated Date/GA:</strong> Enter a date to calculate what the GA would be</li>
+							<li><strong>Clear buttons:</strong> Use individual clear buttons to reset specific sections
+							</li>
+						</ul>
+						<p style="margin: 8px 0 0 0; font-size: 12px; color: #868e96; font-style: italic;">Tip: You can
+							mix and match any combination of inputs.</p>
+					</div>
+
 					<h3>LMP</h3>
 					<input type="date" id="lmp" placeholder="LMP (optional)">
 
 					<h3>EDC</h3>
 					<input type="date" id="edc" placeholder="EDC (optional)">
 
-					<button onclick="clearLmpEdc()">Clear LMP / EDC</button>
+					<button onclick="clearLmpEdc()"
+						style="background: #6c757d; color: white; border: none; border-radius: 4px;">Clear LMP /
+						EDC</button>
 
 					<h3>Known Date / GA</h3>
 					<input type="date" id="dateA" placeholder="Date A (known GA)">
 					<input type="text" id="gaA" placeholder="GA on Date A (e.g. 10+3)">
 
+					<button onclick="clearKnownDateGA()"
+						style="background: #6c757d; color: white; border: none; border-radius: 4px;">Clear Known Date /
+						GA</button>
+
 					<h3>Calculated Date / GA</h3>
 					<input type="date" id="dateB" placeholder="Date B (to find GA)">
 					<input type="text" id="gaB" placeholder="GA on Date B (e.g. 12+0)">
 
-					<button onclick="calculate()">Calculate</button>
+					<button onclick="clearCalculatedDateGA()"
+						style="background: #6c757d; color: white; border: none; border-radius: 4px;">Clear Calculated
+						Date / GA</button>
+
+					<button onclick="calculate()"
+						style="background: #007cba; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 500; padding: 12px;">Calculate</button>
 
 					<pre id="output"></pre>
 				</div>
@@ -423,9 +462,11 @@
 					</div>
 
 					<h3>Auto-Skip Settings</h3>
-					<p style="font-size: 14px; color: #666; margin: 5px 0;">Choose how many decimal places to type before automatically jumping to the next input box:</p>
+					<p style="font-size: 14px; color: #666; margin: 5px 0;">Choose how many decimal places to type
+						before automatically jumping to the next input box:</p>
 					<div class="decimal-buttons">
-						<button class="decimal-button" onclick="setDecimalPrecision(0)">No decimals (skip immediately)</button>
+						<button class="decimal-button" onclick="setDecimalPrecision(0)">No decimals (skip
+							immediately)</button>
 						<button class="decimal-button active" onclick="setDecimalPrecision(1)">1 decimal place</button>
 						<button class="decimal-button" onclick="setDecimalPrecision(2)">2+ decimal places</button>
 					</div>
@@ -478,7 +519,8 @@
 
 					<h3>Default Auto-Skip Setting</h3>
 					<div class="setting-item">
-						<label for="default-precision">When opening Average Calculator, automatically skip after:</label>
+						<label for="default-precision">When opening Average Calculator, automatically skip
+							after:</label>
 						<select id="default-precision" onchange="saveSettings()">
 							<option value="0">No decimals (skip immediately)</option>
 							<option value="1" selected>1 decimal place</option>
@@ -505,9 +547,11 @@
 
 					<h3>Report a Bug</h3>
 					<div class="bug-report-section">
-						<p style="font-size: 14px; color: #666; margin: 10px 0;">Found an issue? Help us improve the app:</p>
+						<p style="font-size: 14px; color: #666; margin: 10px 0;">Found an issue? Help us improve the
+							app:</p>
 						<button onclick="reportBug()" class="bug-report-btn">Report Bug on GitHub</button>
-						<p style="font-size: 12px; color: #888; margin: 10px 0;">This will open GitHub Issues where you can describe the problem you encountered.</p>
+						<p style="font-size: 12px; color: #888; margin: 10px 0;">This will open GitHub Issues where you
+							can describe the problem you encountered.</p>
 					</div>
 
 					<div class="settings-info">
@@ -631,7 +675,7 @@
 			const screenSize = `${screen.width}x${screen.height}`;
 			const viewportSize = `${window.innerWidth}x${window.innerHeight}`;
 			const timestamp = new Date().toISOString();
-			
+
 			const bugTemplate = `**Bug Report**
 
 **Device Info:**
@@ -654,7 +698,7 @@
 
 			const encodedTemplate = encodeURIComponent(bugTemplate);
 			const githubIssueURL = `https://github.com/phuriphatma/ucal/issues/new?title=Bug%20Report&body=${encodedTemplate}`;
-			
+
 			window.open(githubIssueURL, '_blank');
 		}
 
@@ -719,6 +763,35 @@
 			// Add active class to clicked button
 			event.target.classList.add('active');
 		}
+
+		// Instructions toggle functionality
+		function toggleInstructions() {
+			const instructions = document.getElementById('instructions');
+			if (instructions.style.display === 'none') {
+				instructions.style.display = 'block';
+			} else {
+				instructions.style.display = 'none';
+			}
+		}
+
+		// Connection status functionality
+		function updateConnectionStatus() {
+			const statusElement = document.getElementById('connection-status');
+			if (navigator.onLine) {
+				statusElement.innerHTML = '&#128310; Currently Online';
+				statusElement.style.background = '#e8f5e8';
+				statusElement.style.color = '#2e7d2e';
+			} else {
+				statusElement.innerHTML = '&#128241; Currently Offline';
+				statusElement.style.background = '#fff3cd';
+				statusElement.style.color = '#856404';
+			}
+		}
+
+		// Update status on page load and when connection changes
+		document.addEventListener('DOMContentLoaded', updateConnectionStatus);
+		window.addEventListener('online', updateConnectionStatus);
+		window.addEventListener('offline', updateConnectionStatus);
 
 		// Decimal precision functionality
 		function setDecimalPrecision(precision) {
@@ -833,16 +906,16 @@
 		function removeExtraInputs() {
 			const container = document.getElementById('average-inputs');
 			const allRows = container.querySelectorAll('.input-row');
-			
+
 			// Keep only the default number of boxes
 			for (let i = allRows.length - 1; i >= defaultBoxCount; i--) {
 				allRows[i].remove();
 			}
-			
+
 			// Update remove button visibility
 			updateRemoveButtons();
 			calculateAverage();
-			
+
 			// Focus on first input
 			const firstInput = document.querySelector('#average-inputs input');
 			if (firstInput) {
@@ -1281,6 +1354,27 @@
 			});
 		}
 	</script>
+
+	<!-- End Credits -->
+	<footer
+		style="background: #f5f5f5; border-top: 2px solid #ddd; padding: 20px; text-align: center; margin-top: 50px;">
+		<div style="max-width: 600px; margin: 0 auto;">
+			<h3 style="color: #333; margin-bottom: 10px;">Credits</h3>
+			<p style="font-size: 16px; color: #666; margin: 10px 0;">
+				<strong>Created by:</strong> Ung MDKKU50
+			</p>
+			<p style="font-size: 14px; color: #666; margin: 10px 0;">
+				<strong>&#128241; This app works both online and offline</strong> - Save to your home screen for quick
+				access
+			</p>
+			<p style="font-size: 14px; color: #999; margin: 5px 0;">
+				<strong>&#9888; Disclaimer:</strong> Use at your own risk
+			</p>
+			<p style="font-size: 11px; color: #bbb; margin: 10px 0 0 0; font-style: italic;">
+				Originally created for personal use - bugs may exist. Use the Settings tab to report issues.
+			</p>
+		</div>
+	</footer>
 
 
 </body>

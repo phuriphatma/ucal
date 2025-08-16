@@ -23,6 +23,16 @@ function clearLmpEdc() {
   document.getElementById("edc").value = "";
 }
 
+function clearKnownDateGA() {
+  document.getElementById("dateA").value = "";
+  document.getElementById("gaA").value = "";
+}
+
+function clearCalculatedDateGA() {
+  document.getElementById("dateB").value = "";
+  document.getElementById("gaB").value = "";
+}
+
 function calculate() {
   const lmpInput = document.getElementById("lmp");
   const edcInput = document.getElementById("edc");
