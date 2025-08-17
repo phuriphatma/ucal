@@ -400,12 +400,16 @@
 			const clearBtn = document.createElement('button');
 			clearBtn.className = 'clear-input';
 			clearBtn.textContent = 'Clear';
-			clearBtn.onclick = function() { clearInput(inputCount); };
+			clearBtn.onclick = (function(currentId) { 
+				return function() { clearInput(currentId); };
+			})(inputCount);
 			
 			const removeBtn = document.createElement('button');
 			removeBtn.className = 'remove-input';
 			removeBtn.textContent = '×';
-			removeBtn.onclick = function() { removeInput(inputCount); };
+			removeBtn.onclick = (function(currentId) { 
+				return function() { removeInput(currentId); };
+			})(inputCount);
 			
 			inputRow.appendChild(input);
 			inputRow.appendChild(clearBtn);
