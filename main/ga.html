@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GA Calculator</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
+	<meta name="theme-color" content="#007cba">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="apple-mobile-web-app-title" content="GA Calculator">
+	<link rel="manifest" href="manifest-ga.json">
+	<link rel="icon" href="icon.svg" type="image/svg+xml">
+	<script>
+		// Force GA Calculator tab on load
+		window.addEventListener('DOMContentLoaded', () => {
+			// Set hash to GA calculator
+			if (window.location.hash !== '#tab=ga-calculator') {
+				window.location.hash = '#tab=ga-calculator';
+			}
+			// Load the main app
+			window.location.href = 'index.html#tab=ga-calculator';
+		});
+	</script>
+</head>
+<body>
+	<div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif;">
+		<div style="text-align: center;">
+			<h2>🧮 Loading GA Calculator...</h2>
+			<p>Redirecting to GA Calculator...</p>
+		</div>
+	</div>
+</body>
+</html>
