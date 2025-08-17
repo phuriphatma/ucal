@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.0.3"; // Add default tab toggle setting and fix PWA URL issues
+const CACHE_NAME = "ucal-v3.0.4"; // Fix PWA manifest start_url to use query parameters for proper tab targeting
 const urlsToCache = [
   "./",
   "./index.html",

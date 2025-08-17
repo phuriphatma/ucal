@@ -1165,6 +1165,7 @@
 		// Function to handle URL hash and switch to appropriate tab
 		function handleURLHash() {
 			const hash = window.location.hash;
+			const search = window.location.search;
 			let targetTab = null;
 			
 			// First, check if we came from a PWA entry point (only on first load)
@@ -1181,7 +1182,12 @@
 				// Just switch directly without changing URL
 				switchToTab(targetTab, false); // false = don't update hash
 				return;
+			} else if (search.includes('tab=')) {
+				// Check URL query parameters first (for PWA start_url)
+				const searchParams = new URLSearchParams(search);
+				targetTab = searchParams.get('tab');
 			} else if (hash.includes('#tab=')) {
+				// Then check hash parameters
 				const tabParam = new URLSearchParams(hash.substring(1));
 				targetTab = tabParam.get('tab');
 			} else if (enableDefaultTab && defaultStartingTab) {
