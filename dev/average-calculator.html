@@ -282,10 +282,17 @@
 
 	<!-- Math.js for precise decimal calculations -->
 	<script>
-		// Add timestamp to force cache bust
+		// Add timestamp to force cache bust and wait for Math.js to load
 		const timestamp = Date.now();
 		const mathScript = document.createElement('script');
 		mathScript.src = `https://unpkg.com/mathjs@11.11.3/lib/browser/math.min.js?v=3.9.0&t=${timestamp}`;
+		mathScript.onload = function() {
+			// Math.js is now loaded, we can safely use math functions
+			console.log('Math.js loaded successfully');
+		};
+		mathScript.onerror = function() {
+			console.error('Failed to load Math.js, falling back to regular JavaScript math');
+		};
 		document.head.appendChild(mathScript);
 	</script>
 </head>
@@ -668,13 +675,26 @@
 
 			let average = 0;
 			if (values.length > 0) {
-				// Use Math.js for precise decimal calculations
-				const mathValues = values.map(v => math.bignumber(v));
-				const sum = mathValues.reduce((acc, val) => math.add(acc, val), math.bignumber(0));
-				const avgBigNumber = math.divide(sum, values.length);
-				// Round to 10 decimal places to avoid floating point errors, then convert to regular number
-				average = math.round(avgBigNumber, 10);
-				average = math.number(average);
+				if (typeof math !== 'undefined' && math.bignumber) {
+					try {
+						// Use Math.js for precise decimal calculations
+						const mathValues = values.map(v => math.bignumber(v));
+						const sum = mathValues.reduce((acc, val) => math.add(acc, val), math.bignumber(0));
+						const avgBigNumber = math.divide(sum, values.length);
+						// Round to 10 decimal places to avoid floating point errors, then convert to regular number
+						average = math.round(avgBigNumber, 10);
+						average = math.number(average);
+					} catch (error) {
+						console.error('Math.js error, falling back to regular math:', error);
+						// Fallback to regular JavaScript math
+						const sum = values.reduce((acc, val) => acc + val, 0);
+						average = Math.round((sum / values.length) * 1000000000000) / 1000000000000; // Round to 12 decimal places
+					}
+				} else {
+					// Fallback to regular JavaScript math
+					const sum = values.reduce((acc, val) => acc + val, 0);
+					average = Math.round((sum / values.length) * 1000000000000) / 1000000000000; // Round to 12 decimal places
+				}
 			}
 
 			const averageText = `Average: ${average}`;
@@ -697,13 +717,26 @@
 
 			let average = 0;
 			if (values.length > 0) {
-				// Use Math.js for precise decimal calculations
-				const mathValues = values.map(v => math.bignumber(v));
-				const sum = mathValues.reduce((acc, val) => math.add(acc, val), math.bignumber(0));
-				const avgBigNumber = math.divide(sum, values.length);
-				// Round to 10 decimal places to avoid floating point errors, then convert to regular number
-				average = math.round(avgBigNumber, 10);
-				average = math.number(average);
+				if (typeof math !== 'undefined' && math.bignumber) {
+					try {
+						// Use Math.js for precise decimal calculations
+						const mathValues = values.map(v => math.bignumber(v));
+						const sum = mathValues.reduce((acc, val) => math.add(acc, val), math.bignumber(0));
+						const avgBigNumber = math.divide(sum, values.length);
+						// Round to 10 decimal places to avoid floating point errors, then convert to regular number
+						average = math.round(avgBigNumber, 10);
+						average = math.number(average);
+					} catch (error) {
+						console.error('Math.js error, falling back to regular math:', error);
+						// Fallback to regular JavaScript math
+						const sum = values.reduce((acc, val) => acc + val, 0);
+						average = Math.round((sum / values.length) * 1000000000000) / 1000000000000; // Round to 12 decimal places
+					}
+				} else {
+					// Fallback to regular JavaScript math
+					const sum = values.reduce((acc, val) => acc + val, 0);
+					average = Math.round((sum / values.length) * 1000000000000) / 1000000000000; // Round to 12 decimal places
+				}
 			}
 
 			const averageText = `Average: ${average}`;
