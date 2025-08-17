@@ -530,9 +530,11 @@
 			if (e.key === 'Enter' || e.key === 'Tab') {
 				focusNextInput(input);
 			} else if (e.key === 'Backspace') {
-				// Prevent backspace from moving to previous input when current input is empty
+				// Completely prevent backspace from doing anything when input is empty
 				if (input.value === '' && input.selectionStart === 0) {
 					e.preventDefault();
+					e.stopPropagation();
+					return false;
 				}
 			}
 		}
