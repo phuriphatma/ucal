@@ -396,9 +396,9 @@
 			input.step = 'any';
 			input.id = `input-${inputCount}`;
 			input.dataset.index = inputCount; // Add data-index attribute
-			input.oninput = function() { handleInput(this); };
-			input.onkeydown = function(e) { handleKeydown(e, this); };
-			input.onpaste = function(e) { handlePaste(e, this); };
+			input.addEventListener('input', function() { handleInput(this); });
+			input.addEventListener('keydown', function(e) { handleKeydown(e, this); });
+			input.addEventListener('paste', function(e) { handlePaste(e, this); });
 			
 			const clearBtn = document.createElement('button');
 			clearBtn.className = 'clear-input';
@@ -509,25 +509,25 @@
 		}
 
 		function handleInput(input) {
-			// Use setTimeout to ensure input value is fully updated
-			setTimeout(() => {
-				const value = input.value;
-				const decimalIndex = value.indexOf('.');
-				
-				updateAverage();
-				
-				// Auto-skip logic
-				if (decimalPrecision === 0 && value !== '' && decimalIndex === -1) {
-					// Skip immediately for whole numbers when no decimals selected
-					focusNextInput(input);
-				} else if (decimalIndex !== -1) {
-					const decimalPlaces = value.length - decimalIndex - 1;
-					if (decimalPlaces === decimalPrecision) {
-						// Skip when exact number of decimal places is reached
+			const value = input.value;
+			
+			updateAverage();
+			
+			// Auto-skip logic based on index.html implementation
+			if (decimalPrecision > 0) {
+				const dotIndex = value.indexOf('.');
+				if (dotIndex !== -1) {
+					const afterDot = value.substring(dotIndex + 1);
+					if (afterDot.length >= decimalPrecision) {
 						focusNextInput(input);
 					}
 				}
-			}, 10);
+			} else {
+				// For 0 decimal precision, jump on any complete number
+				if (value && !value.includes('.') && !isNaN(parseFloat(value))) {
+					focusNextInput(input);
+				}
+			}
 		}
 
 		function handleKeydown(e, input) {
