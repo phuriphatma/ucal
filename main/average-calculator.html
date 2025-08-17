@@ -393,6 +393,7 @@
 			input.type = 'number';
 			input.step = 'any';
 			input.id = `input-${inputCount}`;
+			input.dataset.index = inputCount; // Add data-index attribute
 			input.oninput = function() { handleInput(this); };
 			input.onkeydown = function(e) { handleKeydown(e, this); };
 			input.onpaste = function(e) { handlePaste(e, this); };
@@ -400,25 +401,12 @@
 			const clearBtn = document.createElement('button');
 			clearBtn.className = 'clear-input';
 			clearBtn.textContent = 'Clear';
-			clearBtn.onclick = function() { 
-				// Find the input in the same row as this button
-				const input = this.parentElement.querySelector('input');
-				if (input) {
-					input.value = '';
-					updateAverage();
-					input.focus();
-				}
-			};
+			clearBtn.onclick = () => clearInput(inputCount); // Use arrow function with current index
 			
 			const removeBtn = document.createElement('button');
 			removeBtn.className = 'remove-input';
 			removeBtn.textContent = '×';
-			removeBtn.onclick = function() { 
-				// Remove the entire row containing this button
-				this.parentElement.remove();
-				updateAllPlaceholders();
-				updateAverage();
-			};
+			removeBtn.onclick = () => removeInput(inputCount); // Use arrow function with current index
 			
 			inputRow.appendChild(input);
 			inputRow.appendChild(clearBtn);
@@ -441,21 +429,24 @@
 			});
 		}
 
-		function removeInput(id) {
-			const inputRow = document.getElementById(`input-row-${id}`);
-			if (inputRow) {
-				inputRow.remove();
-				updateAllPlaceholders(); // Update numbering after removal
-				updateAverage();
+		function removeInput(index) {
+			const input = document.querySelector(`input[data-index="${index}"]`);
+			if (input) {
+				const inputRow = input.closest('.input-row');
+				if (inputRow) {
+					inputRow.remove();
+					updateAllPlaceholders();
+					updateAverage();
+				}
 			}
 		}
 
-		function clearInput(id) {
-			const input = document.getElementById(`input-${id}`);
+		function clearInput(index) {
+			const input = document.querySelector(`input[data-index="${index}"]`);
 			if (input) {
 				input.value = '';
-				updateAverage();
 				input.focus();
+				updateAverage();
 			}
 		}
 
