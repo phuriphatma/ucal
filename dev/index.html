@@ -761,6 +761,9 @@
 
 			// Add active class to clicked button
 			event.target.classList.add('active');
+			
+			// Update URL hash for proper navigation
+			window.location.hash = '#tab=' + tabId;
 		}
 
 		// Instructions toggle functionality
@@ -1142,14 +1145,15 @@
 			const hash = window.location.hash;
 			let targetTab = null;
 			
-			// First, check if we came from a PWA entry point
+			// First, check if we came from a PWA entry point (only on first load)
 			const fromPWA = sessionStorage.getItem('fromPWA');
 			const preferredTab = sessionStorage.getItem('preferredTab');
 			
 			if (fromPWA && preferredTab) {
 				targetTab = preferredTab;
-				// Clear the PWA flag so it doesn't interfere with normal navigation
+				// Clear both PWA flags immediately so they don't interfere with normal navigation
 				sessionStorage.removeItem('fromPWA');
+				sessionStorage.removeItem('preferredTab');
 			} else if (hash.includes('#tab=')) {
 				const tabParam = new URLSearchParams(hash.substring(1));
 				targetTab = tabParam.get('tab');

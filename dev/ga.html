@@ -12,14 +12,16 @@
 	<script>
 		// Ensure GA Calculator tab is active when loading
 		window.addEventListener('DOMContentLoaded', () => {
-			// Set hash immediately and redirect
-			const targetURL = 'index.html#tab=ga-calculator';
+			// Get the current base URL and construct absolute path
+			const currentPath = window.location.pathname;
+			const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+			const targetURL = basePath + '/index.html#tab=ga-calculator';
 			
 			// Store preference in sessionStorage to ensure it persists
 			sessionStorage.setItem('preferredTab', 'ga-calculator');
 			sessionStorage.setItem('fromPWA', 'ga-calculator');
 			
-			// Force the redirect with the hash
+			// Force the redirect with the absolute path
 			window.location.replace(targetURL);
 		});
 	</script>
