@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.3.0"; // Fixed ga-calculator.html pregnancy wheel and UI to match index.html
+const CACHE_NAME = "ucal-v3.4.0"; // Fixed manifest start_url to prevent redirect to ga-standalone.html
 const urlsToCache = [
   "./",
   "./index.html",
