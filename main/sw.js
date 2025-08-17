@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.5.0"; // Changed PWA manifest scope and added query params to force fresh PWA install
+const CACHE_NAME = "ucal-v3.6.0"; // Fixed PWA redirect for average-calculator.html - preventing redirect to avg-standalone.html
 const urlsToCache = [
   "./",
   "./index.html",
