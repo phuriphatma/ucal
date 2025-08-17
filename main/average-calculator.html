@@ -509,32 +509,25 @@
 		}
 
 		function handleInput(input) {
-			const value = input.value;
-			const decimalIndex = value.indexOf('.');
-			
-			updateAverage();
-			
-			console.log('handleInput:', {
-				value: value,
-				decimalPrecision: decimalPrecision,
-				decimalIndex: decimalIndex,
-				hasDecimal: decimalIndex !== -1
-			});
-			
-			// Auto-skip logic
-			if (decimalPrecision === 0 && value !== '' && decimalIndex === -1) {
-				// Skip immediately for whole numbers when no decimals selected
-				console.log('Skipping for whole number');
-				focusNextInput(input);
-			} else if (decimalIndex !== -1) {
-				const decimalPlaces = value.length - decimalIndex - 1;
-				console.log('Decimal places:', decimalPlaces, 'target:', decimalPrecision);
-				if (decimalPlaces === decimalPrecision) {
-					// Skip when exact number of decimal places is reached
-					console.log('Skipping for exact decimal places');
+			// Use setTimeout to ensure input value is fully updated
+			setTimeout(() => {
+				const value = input.value;
+				const decimalIndex = value.indexOf('.');
+				
+				updateAverage();
+				
+				// Auto-skip logic
+				if (decimalPrecision === 0 && value !== '' && decimalIndex === -1) {
+					// Skip immediately for whole numbers when no decimals selected
 					focusNextInput(input);
+				} else if (decimalIndex !== -1) {
+					const decimalPlaces = value.length - decimalIndex - 1;
+					if (decimalPlaces === decimalPrecision) {
+						// Skip when exact number of decimal places is reached
+						focusNextInput(input);
+					}
 				}
-			}
+			}, 10);
 		}
 
 		function handleKeydown(e, input) {
@@ -585,17 +578,8 @@
 			const inputs = Array.from(document.querySelectorAll('#average-inputs input'));
 			const currentIndex = inputs.indexOf(currentInput);
 			
-			console.log('focusNextInput called:', {
-				currentIndex: currentIndex,
-				totalInputs: inputs.length,
-				hasNext: currentIndex < inputs.length - 1
-			});
-			
 			if (currentIndex < inputs.length - 1) {
 				inputs[currentIndex + 1].focus();
-				console.log('Focused next input');
-			} else {
-				console.log('No next input to focus');
 			}
 			// Removed automatic input creation - user must manually add boxes
 		}
