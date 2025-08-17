@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.7.0"; // Fixed autoskip and average calculation functionality
+const CACHE_NAME = "ucal-v3.7.2"; // Force cache clear with aggressive strategy - fixed autoskip and average calculation
 const urlsToCache = [
   "./",
   "./index.html",
@@ -59,17 +59,21 @@ self.addEventListener("install", event => {
 
 // Activate: clean old caches
 self.addEventListener("activate", event => {
-  const whitelist = [CACHE_NAME, CACHE_NAME + '-external'];
   event.waitUntil(
+    // Delete ALL caches to force refresh
     caches.keys().then(cacheNames =>
       Promise.all(
-        cacheNames.map(name => {
-          if (!whitelist.includes(name)) {
-            return caches.delete(name);
-          }
+        cacheNames.map(cacheName => {
+          console.log('Deleting cache:', cacheName);
+          return caches.delete(cacheName);
         })
       )
     ).then(() => {
+      // Now create fresh cache
+      return caches.open(CACHE_NAME).then(cache => {
+        return cache.addAll(urlsToCache);
+      });
+    }).then(() => {
       return self.clients.claim();
     })
   );

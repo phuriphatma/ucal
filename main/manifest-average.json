@@ -1,8 +1,8 @@
 {
-  "name": "Average Calculator - Quick Math Calculator v3",
-  "short_name": "Avg Calc v3",
+  "name": "Average Calculator - Quick Math Calculator v5",
+  "short_name": "Avg Calc v5",
   "description": "Fast and simple calculator for averages, sums, and basic math operations",
-  "start_url": "./average-calculator.html?pwa=true&v=3.7.0",
+  "start_url": "./average-calculator.html?pwa=true&v=3.7.2",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#28a745",
