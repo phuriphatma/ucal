@@ -10,14 +10,17 @@
 	<link rel="manifest" href="manifest-average.json">
 	<link rel="icon" href="icon.svg" type="image/svg+xml">
 	<script>
-		// Force Average Calculator tab on load
+		// Ensure Average Calculator tab is active when loading
 		window.addEventListener('DOMContentLoaded', () => {
-			// Set hash to average calculator
-			if (window.location.hash !== '#tab=average-calculator') {
-				window.location.hash = '#tab=average-calculator';
-			}
-			// Load the main app
-			window.location.href = 'index.html#tab=average-calculator';
+			// Set hash immediately and redirect
+			const targetURL = 'index.html#tab=average-calculator';
+			
+			// Store preference in sessionStorage to ensure it persists
+			sessionStorage.setItem('preferredTab', 'average-calculator');
+			sessionStorage.setItem('fromPWA', 'average-calculator');
+			
+			// Force the redirect with the hash
+			window.location.replace(targetURL);
 		});
 	</script>
 </head>
