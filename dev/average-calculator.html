@@ -393,7 +393,6 @@
 			input.type = 'number';
 			input.step = 'any';
 			input.id = `input-${inputCount}`;
-			input.placeholder = `Number ${inputCount}`;
 			input.oninput = function() { handleInput(this); };
 			input.onkeydown = function(e) { handleKeydown(e, this); };
 			input.onpaste = function(e) { handlePaste(e, this); };
@@ -416,13 +415,24 @@
 			
 			container.appendChild(inputRow);
 			
+			// Update all placeholders to show correct numbering
+			updateAllPlaceholders();
+			
 			return input;
+		}
+
+		function updateAllPlaceholders() {
+			const inputs = document.querySelectorAll('#average-inputs input');
+			inputs.forEach((input, index) => {
+				input.placeholder = `Number ${index + 1}`;
+			});
 		}
 
 		function removeInput(id) {
 			const inputRow = document.getElementById(`input-row-${id}`);
 			if (inputRow) {
 				inputRow.remove();
+				updateAllPlaceholders(); // Update numbering after removal
 				updateAverage();
 			}
 		}
@@ -448,6 +458,7 @@
 			for (let i = inputs.length - 1; i >= 3; i--) {
 				inputs[i].remove();
 			}
+			updateAllPlaceholders(); // Update numbering after removal
 			updateAverage();
 		}
 
@@ -539,11 +550,8 @@
 			
 			if (currentIndex < inputs.length - 1) {
 				inputs[currentIndex + 1].focus();
-			} else {
-				// Create new input and focus it
-				const newInput = addInput();
-				newInput.focus();
 			}
+			// Removed automatic input creation - user must manually add boxes
 		}
 
 		function focusPreviousInput(currentInput) {
