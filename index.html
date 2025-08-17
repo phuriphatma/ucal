@@ -783,9 +783,15 @@
 			}
 		}
 
-		// Tab switching functionality
+		// Tab switching functionality - Navigate to unique URLs
 		function switchTab(tabId) {
-			switchToTab(tabId, true); // Always update hash for manual tab switches
+			if (tabId === 'ga-calculator') {
+				window.location.href = 'ga-calculator.html';
+			} else if (tabId === 'average-calculator') {
+				window.location.href = 'average-calculator.html';
+			} else if (tabId === 'settings') {
+				window.location.href = 'settings.html';
+			}
 		}
 
 		// Instructions toggle functionality
