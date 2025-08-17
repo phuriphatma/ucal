@@ -3,13 +3,16 @@
 
 <head>
 	<title>Average Calculator</title>
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="0">
 	<meta name="viewport"
 		content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
 	<meta name="theme-color" content="#007cba">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="default">
 	<meta name="apple-mobile-web-app-title" content="ucal">
-	<link rel="manifest" href="manifest-average.json?v=3.8.0">
+	<link rel="manifest" href="manifest-average.json?v=3.9.0">
 	<style>
 		body {
 			font-family: sans-serif;
@@ -278,7 +281,13 @@
 	</style>
 
 	<!-- Math.js for precise decimal calculations -->
-	<script src="https://unpkg.com/mathjs@11.11.3/lib/browser/math.min.js?v=3.8.0"></script>
+	<script>
+		// Add timestamp to force cache bust
+		const timestamp = Date.now();
+		const mathScript = document.createElement('script');
+		mathScript.src = `https://unpkg.com/mathjs@11.11.3/lib/browser/math.min.js?v=3.9.0&t=${timestamp}`;
+		document.head.appendChild(mathScript);
+	</script>
 </head>
 
 <body>
@@ -718,9 +727,10 @@
 				for(let registration of registrations) {
 					registration.unregister();
 				}
-				// Register new service worker after cleanup
+				// Register new service worker after cleanup with timestamp
 				setTimeout(() => {
-					navigator.serviceWorker.register('sw.js?v=3.8.0');
+					const timestamp = Date.now();
+					navigator.serviceWorker.register(`sw.js?v=3.9.0&t=${timestamp}`);
 				}, 100);
 			});
 		}

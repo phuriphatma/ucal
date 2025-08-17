@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.8.0"; // MATH.JS PRECISION FIX - Force complete cache invalidation
+const CACHE_NAME = "ucal-v3.9.0-" + Date.now(); // TIMESTAMP CACHE BUST - Force complete invalidation
 const urlsToCache = [
   "./",
   "./index.html",

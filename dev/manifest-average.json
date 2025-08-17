@@ -1,8 +1,8 @@
 {
-  "name": "Average Calculator - Math.js Precision Fix v6",
-  "short_name": "Avg Calc v6",
-  "description": "Fast and simple calculator for averages, sums, and basic math operations with precise decimal calculations",
-  "start_url": "./average-calculator.html?pwa=true&v=3.8.0",
+  "name": "Average Calculator - FIXED v7 No Cache Issues",
+  "short_name": "Avg Calc v7",
+  "description": "Fast and simple calculator for averages, sums, and basic math operations with precise decimal calculations - CACHE FIXED",
+  "start_url": "./average-calculator.html?pwa=true&v=3.9.0",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#28a745",
