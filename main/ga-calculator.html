@@ -1,53 +1,476 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GA Calculator - Gestational Age Calculator</title>
-    <link rel="icon" type="image/svg+xml" href="icon.svg">
-    <link rel="manifest" href="manifest-ga.json">
-    <meta name="theme-color" content="#007cba">
-    
-    <style>
-        /* Copy all styles from main index.html for GA Calculator */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+	<title>GA Calculator</title>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
+	<meta name="theme-color" content="#007cba">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="apple-mobile-web-app-title" content="ucal">
+	<link rel="manifest" href="manifest-ga.json">
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 20px;
+			max-width: 1200px;
+			margin: auto;
+			position: relative;
+			min-height: 100vh;
+			/* Improve scroll behavior */
+			scroll-behavior: smooth;
+			/* Prevent scroll anchoring issues */
+			overflow-anchor: none;
+		}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
+		input,
+		button {
+			width: 100%;
+			padding: 10px;
+			margin: 10px 0;
+			font-size: 16px;
+		}
 
-        .header {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 0;
-            backdrop-filter: blur(10px);
-        }
+		/* Mobile viewport fix for keyboard */
+		@media (max-width: 768px) {
 
-        .nav-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+			html,
+			body {
+				height: 100vh;
+				height: 100dvh;
+				/* Dynamic viewport height */
+				overflow-x: hidden;
+				margin: 0;
+				padding: 0;
+				/* Fix smooth scrolling to top */
+				scroll-behavior: smooth;
+			}
 
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+			body {
+				padding: 0;
+				/* Remove any potential scroll barriers */
+				position: relative;
+			}
 
-        .nav-button {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            text-decoration: none;
+			.tab-container {
+				padding: 10px;
+				padding-bottom: 50px;
+				/* Ensure smooth scrolling within container */
+				scroll-behavior: smooth;
+			}
+
+			/* Add padding to tab buttons on mobile */
+			.tab-buttons {
+				padding-top: 29px;
+			}
+
+			.average-inputs {
+				margin: 10px 0;
+			}
+
+			.input-row {
+				margin: 5px 0;
+			}
+
+			input {
+				font-size: 16px;
+				/* Prevents zoom on iOS */
+				padding: 12px;
+			}
+		}
+
+		h2 {
+			text-align: center;
+		}
+
+		pre {
+			background: #f9f9f9;
+			padding: 10px;
+			white-space: pre-wrap;
+		}
+
+		.container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+
+		.form-section {
+			flex: 1 1 300px;
+		}
+
+		.calendar-section {
+			flex: 1 1 300px;
+		}
+
+		#pregnancy-wheel-container {
+			position: relative;
+			width: 400px;
+			height: 400px;
+			margin: auto;
+		}
+
+		#pregnancy-wheel {
+			display: block;
+		}
+
+		/* Tab styles */
+		.tab-container {
+			margin-bottom: 20px;
+		}
+
+		.tab-buttons {
+			display: flex;
+			gap: 0;
+			margin-bottom: 20px;
+		}
+
+		.tab-button {
+			flex: 1;
+			padding: 15px;
+			background: #f0f0f0;
+			border: 1px solid #ccc;
+			cursor: pointer;
+			transition: background-color 0.3s;
+			margin: 0;
+		}
+
+		.tab-button.active {
+			background: #007cba;
+			color: white;
+		}
+
+		.tab-button:hover {
+			background: #e0e0e0;
+		}
+
+		.tab-button.active:hover {
+			background: #005a87;
+		}
+
+		.tab-content {
+			display: none;
+		}
+
+		.tab-content.active {
+			display: block;
+		}
+	</style>
+
+	<!-- Flatpickr CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+</head>
+
+<body>
+	<!-- Tab Navigation -->
+	<div class="tab-container">
+		<div class="tab-buttons">
+			<button class="tab-button active" onclick="switchTab('ga-calculator')">GA Calculator</button>
+			<button class="tab-button" onclick="switchTab('average-calculator')">Average Calculator</button>
+			<button class="tab-button" onclick="switchTab('settings')">Settings</button>
+		</div>
+
+		<!-- GA Calculator Tab (Only this tab will be visible) -->
+		<div id="ga-calculator" class="tab-content active">
+			<div class="container">
+				<div class="form-section">
+					<h2>4-Box GA Calculator with LMP, EDC</h2>
+
+					<div
+						style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+						<div id="connection-status"
+							style="padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">
+							&#128241; Checking...
+						</div>
+						<button onclick="toggleInstructions()"
+							style="background: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6; border-radius: 4px; width: 24px; height: 24px; font-size: 12px; cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+							?
+						</button>
+					</div>
+
+					<div id="instructions"
+						style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 13px;">
+						<h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">How to Use:</h4>
+						<ul style="margin: 8px 0; padding-left: 18px; color: #6c757d;">
+							<li><strong>LMP/EDC:</strong> Enter Last Menstrual Period or Expected Date of Confinement
+								(optional)</li>
+							<li><strong>Known Date/GA:</strong> Enter a date where you know the exact gestational age
+							</li>
+							<li><strong>Calculated Date/GA:</strong> Enter a date to calculate what the GA would be</li>
+							<li><strong>Clear buttons:</strong> Use individual clear buttons to reset specific sections
+							</li>
+						</ul>
+						<p style="margin: 8px 0 0 0; font-size: 12px; color: #868e96; font-style: italic;">Tip: You can
+							mix and match any combination of inputs.</p>
+					</div>
+
+					<label for="lmp">LMP (optional):</label>
+					<input type="date" id="lmp" onchange="calculate()" />
+					<button type="button" onclick="clearLMP()">Clear LMP</button>
+
+					<label for="edc">EDC (optional):</label>
+					<input type="date" id="edc" onchange="calculate()" />
+					<button type="button" onclick="clearEDC()">Clear EDC</button>
+
+					<hr />
+
+					<label for="dateA">Known Date:</label>
+					<input type="date" id="dateA" onchange="calculate()" />
+					<button type="button" onclick="clearDateA()">Clear Known Date</button>
+
+					<label for="gaWeeksA">Known GA (weeks):</label>
+					<input type="number" id="gaWeeksA" min="0" max="50" onchange="calculate()" />
+
+					<label for="gaDaysA">Known GA (days):</label>
+					<input type="number" id="gaDaysA" min="0" max="6" onchange="calculate()" />
+					<button type="button" onclick="clearGA()">Clear Known GA</button>
+
+					<hr />
+
+					<label for="dateB">Calculated Date:</label>
+					<input type="date" id="dateB" onchange="calculate()" />
+					<button type="button" onclick="clearDateB()">Clear Calculated Date</button>
+
+					<pre id="result"></pre>
+				</div>
+
+				<div class="calendar-section">
+					<h2>Calendar View</h2>
+					<div id="calendar"></div>
+					<br />
+					<h2>Pregnancy Wheel</h2>
+					<div id="pregnancy-wheel-container">
+						<svg id="pregnancy-wheel" width="400" height="400" viewBox="0 0 400 400">
+							<!-- Outer circle (dates) -->
+							<circle cx="200" cy="200" r="180" fill="none" stroke="#ccc" stroke-width="2" />
+
+							<!-- Inner circle (GA weeks) -->
+							<g id="inner-circle">
+								<circle cx="200" cy="200" r="120" fill="none" stroke="#007cba" stroke-width="3" />
+							</g>
+
+							<!-- Center dot -->
+							<circle cx="200" cy="200" r="5" fill="#007cba" />
+
+							<!-- Month labels around outer circle -->
+						</svg>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Tab switching functionality - Navigate to unique URLs
+		function switchTab(tabId) {
+			if (tabId === 'ga-calculator') {
+				// Stay on current page since we're already on GA Calculator
+				return;
+			} else if (tabId === 'average-calculator') {
+				window.location.href = 'average-calculator.html';
+			} else if (tabId === 'settings') {
+				window.location.href = 'settings.html';
+			}
+		}
+
+		// Instructions toggle functionality
+		function toggleInstructions() {
+			const instructions = document.getElementById('instructions');
+			if (instructions.style.display === 'none') {
+				instructions.style.display = 'block';
+			} else {
+				instructions.style.display = 'none';
+			}
+		}
+
+		// Connection status functionality
+		function updateConnectionStatus() {
+			const statusElement = document.getElementById('connection-status');
+			if (navigator.onLine) {
+				statusElement.innerHTML = '&#128310; Currently Online';
+				statusElement.style.background = '#e8f5e8';
+				statusElement.style.color = '#2e7d2e';
+			} else {
+				statusElement.innerHTML = '&#128241; Currently Offline';
+				statusElement.style.background = '#fff3cd';
+				statusElement.style.color = '#856404';
+			}
+		}
+
+		// Update status on page load and when connection changes
+		document.addEventListener('DOMContentLoaded', updateConnectionStatus);
+		window.addEventListener('online', updateConnectionStatus);
+		window.addEventListener('offline', updateConnectionStatus);
+
+		// GA Calculator functionality
+		function calculate() {
+			const lmp = document.getElementById("lmp").value;
+			const edc = document.getElementById("edc").value;
+			const dateA = document.getElementById("dateA").value;
+			const gaWeeksA = parseInt(document.getElementById("gaWeeksA").value) || 0;
+			const gaDaysA = parseInt(document.getElementById("gaDaysA").value) || 0;
+			const dateB = document.getElementById("dateB").value;
+
+			let result = "";
+			let refDate = null;
+			let refGA = 0;
+
+			// Determine reference point
+			if (lmp) {
+				refDate = new Date(lmp);
+				refGA = 0;
+				result += `Using LMP: ${lmp}\n`;
+			} else if (edc) {
+				refDate = new Date(edc);
+				refDate.setDate(refDate.getDate() - 280); // EDC - 280 days = LMP
+				refGA = 0;
+				result += `Using EDC: ${edc} (LMP calculated as ${refDate.toISOString().split('T')[0]})\n`;
+			} else if (dateA && (gaWeeksA > 0 || gaDaysA > 0)) {
+				refDate = new Date(dateA);
+				refGA = gaWeeksA * 7 + gaDaysA;
+				result += `Using Known Date: ${dateA} at ${gaWeeksA}w${gaDaysA}d\n`;
+			}
+
+			if (!refDate) {
+				document.getElementById("result").textContent = "Please enter LMP, EDC, or a known date with GA.";
+				return;
+			}
+
+			result += "\n--- Calculations ---\n";
+
+			// Calculate LMP if not directly entered
+			if (!lmp && refDate && refGA >= 0) {
+				const lmpDate = new Date(refDate);
+				lmpDate.setDate(lmpDate.getDate() - refGA);
+				result += `LMP: ${lmpDate.toISOString().split('T')[0]}\n`;
+			}
+
+			// Calculate EDC if not directly entered  
+			if (!edc && refDate && refGA >= 0) {
+				const edcDate = new Date(refDate);
+				edcDate.setDate(edcDate.getDate() - refGA + 280);
+				result += `EDC: ${edcDate.toISOString().split('T')[0]}\n`;
+			}
+
+			// Calculate GA for dateB if provided
+			if (dateB && refDate) {
+				const calcDate = new Date(dateB);
+				const diffTime = calcDate - refDate;
+				const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+				const totalGADays = refGA + diffDays;
+				const weeks = Math.floor(totalGADays / 7);
+				const days = totalGADays % 7;
+
+				result += `\nGA on ${dateB}: ${weeks}w${days}d (${totalGADays} days)\n`;
+			}
+
+			// Calculate current GA
+			const today = new Date();
+			const diffTime = today - refDate;
+			const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+			const currentGADays = refGA + diffDays;
+			const currentWeeks = Math.floor(currentGADays / 7);
+			const currentDays = currentGADays % 7;
+
+			result += `\nCurrent GA: ${currentWeeks}w${currentDays}d (${currentGADays} days)\n`;
+
+			document.getElementById("result").textContent = result;
+		}
+
+		// Clear functions
+		function clearLMP() {
+			document.getElementById("lmp").value = "";
+			calculate();
+		}
+
+		function clearEDC() {
+			document.getElementById("edc").value = "";
+			calculate();
+		}
+
+		function clearDateA() {
+			document.getElementById("dateA").value = "";
+			calculate();
+		}
+
+		function clearGA() {
+			document.getElementById("gaWeeksA").value = "";
+			document.getElementById("gaDaysA").value = "";
+			calculate();
+		}
+
+		function clearDateB() {
+			document.getElementById("dateB").value = "";
+			calculate();
+		}
+	</script>
+
+	<!-- Flatpickr JS -->
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+	<script>
+		// Inline calendar view (read-only)
+		flatpickr("#calendar", {
+			inline: true,
+			dateFormat: "Y-m-d",
+			defaultDate: new Date(),
+			disableMobile: true
+		});
+
+		// Pregnancy wheel setup
+		const svg = document.getElementById("pregnancy-wheel");
+		const innerCircleGroup = document.getElementById("inner-circle");
+		const cx = 200, cy = 200;
+		const outerRadius = 180;
+		const innerRadius = 120;
+
+		// Add month labels
+		const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		for (let i = 0; i < 12; i++) {
+			const angle = (i * 30 - 90) * Math.PI / 180; // -90 to start from top
+			const x = cx + outerRadius * 0.9 * Math.cos(angle);
+			const y = cy + outerRadius * 0.9 * Math.sin(angle);
+			
+			const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			text.setAttribute("x", x);
+			text.setAttribute("y", y);
+			text.setAttribute("text-anchor", "middle");
+			text.setAttribute("dominant-baseline", "middle");
+			text.setAttribute("font-size", "12");
+			text.setAttribute("fill", "#666");
+			text.textContent = months[i];
+			svg.appendChild(text);
+		}
+
+		// Add GA week labels
+		for (let week = 0; week <= 42; week += 2) {
+			const angle = (week * 360 / 42 - 90) * Math.PI / 180;
+			const x = cx + innerRadius * 0.8 * Math.cos(angle);
+			const y = cy + innerRadius * 0.8 * Math.sin(angle);
+			
+			const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			text.setAttribute("x", x);
+			text.setAttribute("y", y);
+			text.setAttribute("text-anchor", "middle");
+			text.setAttribute("dominant-baseline", "middle");
+			text.setAttribute("font-size", "10");
+			text.setAttribute("fill", "#007cba");
+			text.textContent = week;
+			svg.appendChild(text);
+		}
+	</script>
+
+	<!-- Service Worker Registration -->
+	<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('sw.js');
+		}
+	</script>
+
+</body>
+</html>
             border-radius: 20px;
             font-size: 14px;
             transition: all 0.3s ease;
