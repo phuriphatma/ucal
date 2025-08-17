@@ -512,7 +512,7 @@
 			const input = event.target;
 			const value = input.value;
 
-			updateAverage();
+			calculateAverage();
 
 			// Check if we need to jump to next input (but don't auto-create)
 			if (decimalPrecision > 0) {
@@ -616,20 +616,48 @@
 
 		function updateAverage() {
 			const inputs = document.querySelectorAll('#average-inputs input');
-			const values = Array.from(inputs)
-				.map(input => parseFloat(input.value))
-				.filter(value => !isNaN(value) && value !== '');
-			
+			const values = [];
+
+			inputs.forEach(input => {
+				const value = parseFloat(input.value);
+				if (!isNaN(value)) {
+					values.push(value);
+				}
+			});
+
 			let average = 0;
 			if (values.length > 0) {
-				// Use math.js for precise decimal arithmetic
-				const sum = math.add(...values);
-				average = math.divide(sum, values.length);
-				// Format to remove trailing zeros but keep precision
-				average = math.format(average, {precision: 14});
+				const sum = values.reduce((acc, val) => acc + val, 0);
+				average = sum / values.length;
 			}
-			
+
 			const averageText = `Average: ${average}`;
+
+			// Update both regular and mobile average displays
+			document.getElementById('average-result').textContent = averageText;
+			document.getElementById('mobile-average-bar').textContent = averageText;
+		}
+
+		function calculateAverage() {
+			const inputs = document.querySelectorAll('#average-inputs input');
+			const values = [];
+
+			inputs.forEach(input => {
+				const value = parseFloat(input.value);
+				if (!isNaN(value)) {
+					values.push(value);
+				}
+			});
+
+			let average = 0;
+			if (values.length > 0) {
+				const sum = values.reduce((acc, val) => acc + val, 0);
+				average = sum / values.length;
+			}
+
+			const averageText = `Average: ${average}`;
+
+			// Update both regular and mobile average displays
 			document.getElementById('average-result').textContent = averageText;
 			document.getElementById('mobile-average-bar').textContent = averageText;
 		}
