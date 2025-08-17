@@ -1,9 +1,11 @@
-const CACHE_NAME = "ucal-v3.0.4"; // Fix PWA manifest start_url to use query parameters for proper tab targeting
+const CACHE_NAME = "ucal-v3.1.0"; // Add standalone calculator pages for separate PWA URLs
 const urlsToCache = [
   "./",
   "./index.html",
   "./ga.html",
   "./avg.html",
+  "./ga-standalone.html",
+  "./avg-standalone.html",
   "./average.html",
   "./settings.html",
   "./calculator.js",
