@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.2.0"; // Add separate URL paths for each tab instead of hash navigation
+const CACHE_NAME = "ucal-v3.3.0"; // Fixed ga-calculator.html pregnancy wheel and UI to match index.html
 const urlsToCache = [
   "./",
   "./index.html",
