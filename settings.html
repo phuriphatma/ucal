@@ -1,29 +1,311 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Settings - ucal</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
-	<meta name="theme-color" content="#6c757d">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="default">
-	<meta name="apple-mobile-web-app-title" content="Settings">
-	<link rel="manifest" href="manifest-settings.json">
-	<link rel="icon" type="image/svg+xml" href="icon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ucal Configuration</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="manifest" href="manifest-settings.json">
+    <meta name="theme-color" content="#6c757d">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-button.active {
+            background: white;
+            color: #333;
+            border-color: #6c757d;
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            margin-top: 25px;
+        }
+
+        h3:first-of-type {
+            margin-top: 0;
+        }
+
+        .setting-item {
+            margin: 15px 0;
+        }
+
+        .setting-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .setting-item label input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .setting-item select {
+            width: 100%;
+            padding: 8px;
+            margin: 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .setting-item select:focus {
+            outline: none;
+            border-color: #6c757d;
+        }
+
+        .reset-settings-btn, .bug-report-btn {
+            width: 100%;
+            padding: 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .reset-settings-btn:hover, .bug-report-btn:hover {
+            background: #545b62;
+        }
+
+        .settings-info, .bug-report-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .settings-info p, .bug-report-section p {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .settings-info p:last-child, .bug-report-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+                margin: 10px;
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-	<script>
-		// Redirect to main app but start on Settings tab
-		const url = new URL(window.location);
-		url.pathname = '/ucal/index.html';
-		url.hash = '#tab=settings';
-		window.location.replace(url.toString());
-	</script>
-	
-	<!-- Fallback for users with JavaScript disabled -->
-	<noscript>
-		<meta http-equiv="refresh" content="0; url=index.html#tab=settings">
-	</noscript>
-	
-	<p>Redirecting to Settings...</p>
+    <div class="header">
+        <div class="nav-container">
+            <div class="nav-buttons">
+                <a href="ga-calculator" class="nav-button">📊 GA Calculator</a>
+                <a href="average-calculator" class="nav-button">🧮 Average Calculator</a>
+                <a href="settings" class="nav-button active">⚙️ Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-section">
+            <h1>⚙️ Settings</h1>
+            <p class="subtitle">Configure your preferences</p>
+
+            <h3>Default Number of Input Boxes</h3>
+            <div class="setting-item">
+                <label for="default-boxes">Default boxes when opening Average Calculator:</label>
+                <select id="default-boxes" onchange="saveSettings()">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+
+            <h3>Default Auto-Skip Setting</h3>
+            <div class="setting-item">
+                <label for="default-precision">When opening Average Calculator, automatically skip after:</label>
+                <select id="default-precision" onchange="saveSettings()">
+                    <option value="0">No decimals (skip immediately)</option>
+                    <option value="1" selected>1 decimal place</option>
+                    <option value="2">2 decimal places</option>
+                    <option value="3">3 decimal places</option>
+                    <option value="4">4 decimal places</option>
+                    <option value="5">5 decimal places</option>
+                </select>
+            </div>
+
+            <button onclick="resetSettings()" class="reset-settings-btn">Reset to Defaults</button>
+
+            <button onclick="forceRefresh()" class="reset-settings-btn" style="background: #4CAF50;">Force Refresh App</button>
+
+            <h3>Report a Bug</h3>
+            <div class="bug-report-section">
+                <p>Found an issue? Help us improve the app:</p>
+                <button onclick="reportBug()" class="bug-report-btn">Report Bug on GitHub</button>
+                <p>This will open GitHub Issues where you can describe the problem you encountered.</p>
+            </div>
+
+            <div class="settings-info">
+                <p><strong>Note:</strong> Settings are saved in your browser and will be remembered when you return to the calculator.</p>
+                <p><strong>Force Refresh:</strong> Use this button to get the latest version of the app from GitHub.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let decimalPrecision = 1;
+        let defaultBoxCount = 3;
+
+        function loadSettings() {
+            const savedBoxCount = localStorage.getItem('ucal-default-boxes');
+            const savedPrecision = localStorage.getItem('ucal-default-precision');
+
+            if (savedBoxCount) {
+                defaultBoxCount = parseInt(savedBoxCount);
+                document.getElementById('default-boxes').value = defaultBoxCount;
+            }
+
+            if (savedPrecision) {
+                const precision = parseInt(savedPrecision);
+                decimalPrecision = precision;
+                document.getElementById('default-precision').value = precision;
+            }
+        }
+
+        function saveSettings() {
+            const boxCount = parseInt(document.getElementById('default-boxes').value);
+            const precision = parseInt(document.getElementById('default-precision').value);
+
+            localStorage.setItem('ucal-default-boxes', boxCount);
+            localStorage.setItem('ucal-default-precision', precision);
+
+            // Update global variables
+            defaultBoxCount = boxCount;
+            decimalPrecision = precision;
+        }
+
+        function resetSettings() {
+            localStorage.removeItem('ucal-default-boxes');
+            localStorage.removeItem('ucal-default-precision');
+
+            defaultBoxCount = 3;
+            decimalPrecision = 1;
+
+            document.getElementById('default-boxes').value = defaultBoxCount;
+            document.getElementById('default-precision').value = decimalPrecision;
+        }
+
+        function forceRefresh() {
+            // Clear all caches and force reload from server
+            if ('serviceWorker' in navigator && 'caches' in window) {
+                caches.keys().then(function (cacheNames) {
+                    return Promise.all(
+                        cacheNames.map(function (cacheName) {
+                            return caches.delete(cacheName);
+                        })
+                    );
+                }).then(function() {
+                    window.location.reload(true);
+                });
+            } else {
+                window.location.reload(true);
+            }
+        }
+
+        function reportBug() {
+            window.open('https://github.com/phuriphatma/ucal/issues', '_blank');
+        }
+
+        // Initialize settings on page load
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
 </body>
 </html>
