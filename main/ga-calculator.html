@@ -303,7 +303,6 @@
 		window.addEventListener('offline', updateConnectionStatus);
 	</script>
 
-	<!-- Pregnancy wheel functionality -->
 	<script>
 		const svg = document.getElementById("pregnancy-wheel");
 		const innerCircleGroup = document.getElementById("inner-circle");
@@ -318,6 +317,11 @@
 		];
 
 		const totalDays = daysInMonth.reduce((a, b) => a + b, 0);
+
+
+
+
+
 
 		// ✅ 1️⃣ Inner circle: weeks + week ticks
 		for (let i = 0; i <= 40; i++) { // changed from 1..52 to 0..40
@@ -518,6 +522,17 @@
 				});
 			}
 		}
+
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function () {
+				navigator.serviceWorker.register('./sw.js')
+					.then(function (registration) {
+						console.log('ServiceWorker registered: ', registration);
+					}, function (err) {
+						console.log('ServiceWorker registration failed: ', err);
+					});
+			});
+		}
 	</script>
 
 	<!-- Flatpickr JS -->
@@ -531,13 +546,6 @@
 			defaultDate: new Date(),
 			disableMobile: true
 		});
-	</script>
-
-	<!-- Service Worker Registration -->
-	<script>
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('sw.js');
-		}
 	</script>
 
 	<!-- End Credits -->
