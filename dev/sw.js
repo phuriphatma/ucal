@@ -1,13 +1,15 @@
-const CACHE_NAME = "ucal-v3.1.0"; // Add standalone calculator pages for separate PWA URLs
+const CACHE_NAME = "ucal-v3.2.0"; // Add separate URL paths for each tab instead of hash navigation
 const urlsToCache = [
   "./",
   "./index.html",
   "./ga.html",
   "./avg.html",
+  "./ga-calculator.html",
+  "./average-calculator.html", 
+  "./settings.html",
   "./ga-standalone.html",
   "./avg-standalone.html",
   "./average.html",
-  "./settings.html",
   "./calculator.js",
   "./manifest.json",
   "./manifest-ga.json",
