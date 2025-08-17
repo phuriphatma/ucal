@@ -2,7 +2,7 @@
   "name": "Average Calculator - Quick Math Calculator",
   "short_name": "Average Calc",
   "description": "Fast and simple calculator for averages, sums, and basic math operations",
-  "start_url": "./avg.html",
+  "start_url": "./?tab=average-calculator",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#28a745",

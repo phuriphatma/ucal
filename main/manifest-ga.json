@@ -2,7 +2,7 @@
   "name": "GA Calculator - Gestational Age Calculator",
   "short_name": "GA Calculator",
   "description": "Professional pregnancy calculator for gestational age, due dates, and pregnancy milestones",
-  "start_url": "./ga.html",
+  "start_url": "./?tab=ga-calculator",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007cba",
