@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Average Calculator - Quick Math Calculator</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="manifest" href="manifest-average.json">
+    <meta name="theme-color" content="#28a745">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .decimal-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .decimal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .decimal-btn {
+            padding: 8px 16px;
+            border: 2px solid #28a745;
+            background: white;
+            color: #28a745;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .decimal-btn.active {
+            background: #28a745;
+            color: white;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        .number-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+
+        .average-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .average-display h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .average-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover {
+            background: #545b62;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 Average Calculator</h1>
+        <p class="subtitle">Quick Math Calculator</p>
+        
+        <div class="decimal-selector">
+            <label>Decimal Places:</label>
+            <div class="decimal-buttons">
+                <button class="decimal-btn" onclick="setDecimalPrecision(0)">0</button>
+                <button class="decimal-btn active" onclick="setDecimalPrecision(1)">1</button>
+                <button class="decimal-btn" onclick="setDecimalPrecision(2)">2</button>
+                <button class="decimal-btn" onclick="setDecimalPrecision(3)">3+</button>
+            </div>
+        </div>
+
+        <div class="input-container" id="input-container">
+            <input type="number" class="number-input" placeholder="Enter number 1" oninput="calculateAverage()" onkeydown="handleKeyDown(event, this)">
+            <input type="number" class="number-input" placeholder="Enter number 2" oninput="calculateAverage()" onkeydown="handleKeyDown(event, this)">
+            <input type="number" class="number-input" placeholder="Enter number 3" oninput="calculateAverage()" onkeydown="handleKeyDown(event, this)">
+        </div>
+
+        <div class="average-display">
+            <h3>Average:</h3>
+            <div class="average-value" id="average-result">0</div>
+        </div>
+
+        <button class="clear-btn" onclick="clearAll()">Clear All</button>
+    </div>
+
+    <script>
+        let decimalPrecision = 1;
+        let currentInputIndex = 0;
+
+        function setDecimalPrecision(precision) {
+            decimalPrecision = precision;
+            
+            // Update button states
+            document.querySelectorAll('.decimal-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            calculateAverage();
+        }
+
+        function handleKeyDown(event, input) {
+            const inputs = document.querySelectorAll('.number-input');
+            const currentIndex = Array.from(inputs).indexOf(input);
+
+            // Handle Enter or decimal point based on precision
+            if (event.key === 'Enter' || (event.key === '.' && shouldAutoSkip(input.value))) {
+                event.preventDefault();
+                moveToNextInput(currentIndex);
+            }
+            // Handle Backspace to move to previous input
+            else if (event.key === 'Backspace' && input.value === '' && currentIndex > 0) {
+                event.preventDefault();
+                inputs[currentIndex - 1].focus();
+            }
+        }
+
+        function shouldAutoSkip(value) {
+            if (decimalPrecision === 0) return !value.includes('.');
+            
+            const decimalIndex = value.indexOf('.');
+            if (decimalIndex === -1) return false;
+            
+            const decimalPlaces = value.length - decimalIndex - 1;
+            return decimalPlaces >= decimalPrecision;
+        }
+
+        function moveToNextInput(currentIndex) {
+            const inputs = document.querySelectorAll('.number-input');
+            
+            if (currentIndex < inputs.length - 1) {
+                inputs[currentIndex + 1].focus();
+            } else {
+                // Add new input if we're at the last one
+                addNewInput();
+            }
+        }
+
+        function addNewInput() {
+            const container = document.getElementById('input-container');
+            const inputs = document.querySelectorAll('.number-input');
+            const newInput = document.createElement('input');
+            
+            newInput.type = 'number';
+            newInput.className = 'number-input';
+            newInput.placeholder = `Enter number ${inputs.length + 1}`;
+            newInput.oninput = calculateAverage;
+            newInput.onkeydown = function(event) { handleKeyDown(event, this); };
+            
+            container.appendChild(newInput);
+            newInput.focus();
+        }
+
+        function calculateAverage() {
+            const inputs = document.querySelectorAll('.number-input');
+            let sum = 0;
+            let count = 0;
+
+            inputs.forEach(input => {
+                const value = parseFloat(input.value);
+                if (!isNaN(value)) {
+                    sum += value;
+                    count++;
+                }
+            });
+
+            const average = count > 0 ? sum / count : 0;
+            const displayValue = decimalPrecision === 0 ? 
+                Math.round(average) : 
+                average.toFixed(decimalPrecision === 3 ? 2 : decimalPrecision);
+
+            document.getElementById('average-result').textContent = displayValue;
+        }
+
+        function clearAll() {
+            const inputs = document.querySelectorAll('.number-input');
+            
+            // Remove extra inputs, keep only first 3
+            for (let i = inputs.length - 1; i >= 3; i--) {
+                inputs[i].remove();
+            }
+            
+            // Clear remaining inputs
+            document.querySelectorAll('.number-input').forEach((input, index) => {
+                input.value = '';
+                input.placeholder = `Enter number ${index + 1}`;
+            });
+            
+            document.getElementById('average-result').textContent = '0';
+            document.querySelector('.number-input').focus();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.number-input').focus();
+            calculateAverage();
+        });
+    </script>
+</body>
+</html>
