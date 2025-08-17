@@ -400,16 +400,25 @@
 			const clearBtn = document.createElement('button');
 			clearBtn.className = 'clear-input';
 			clearBtn.textContent = 'Clear';
-			clearBtn.onclick = (function(currentId) { 
-				return function() { clearInput(currentId); };
-			})(inputCount);
+			clearBtn.onclick = function() { 
+				// Find the input in the same row as this button
+				const input = this.parentElement.querySelector('input');
+				if (input) {
+					input.value = '';
+					updateAverage();
+					input.focus();
+				}
+			};
 			
 			const removeBtn = document.createElement('button');
 			removeBtn.className = 'remove-input';
 			removeBtn.textContent = '×';
-			removeBtn.onclick = (function(currentId) { 
-				return function() { removeInput(currentId); };
-			})(inputCount);
+			removeBtn.onclick = function() { 
+				// Remove the entire row containing this button
+				this.parentElement.remove();
+				updateAllPlaceholders();
+				updateAverage();
+			};
 			
 			inputRow.appendChild(input);
 			inputRow.appendChild(clearBtn);
