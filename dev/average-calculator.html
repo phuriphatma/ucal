@@ -271,6 +271,8 @@
 		}
 	</style>
 
+	<!-- Math.js for precise decimal calculations -->
+	<script src="https://unpkg.com/mathjs@11.11.3/lib/browser/math.min.js"></script>
 </head>
 
 <body>
@@ -525,11 +527,10 @@
 		}
 
 		function handleKeydown(e, input) {
-			if (e.key === 'Backspace' && input.value === '') {
-				focusPreviousInput(input);
-			} else if (e.key === 'Enter' || e.key === 'Tab') {
+			if (e.key === 'Enter' || e.key === 'Tab') {
 				focusNextInput(input);
 			}
+			// Removed backspace behavior - no more jumping to previous box
 		}
 
 		function handlePaste(e, input) {
@@ -588,11 +589,14 @@
 			
 			let average = 0;
 			if (values.length > 0) {
-				const sum = values.reduce((a, b) => a + b, 0);
-				average = sum / values.length;
+				// Use math.js for precise decimal arithmetic
+				const sum = math.add(...values);
+				average = math.divide(sum, values.length);
+				// Format to remove trailing zeros but keep precision
+				average = math.format(average, {precision: 14});
 			}
 			
-			const averageText = `Average: ${average.toFixed(2)}`;
+			const averageText = `Average: ${average}`;
 			document.getElementById('average-result').textContent = averageText;
 			document.getElementById('mobile-average-bar').textContent = averageText;
 		}
