@@ -529,8 +529,12 @@
 		function handleKeydown(e, input) {
 			if (e.key === 'Enter' || e.key === 'Tab') {
 				focusNextInput(input);
+			} else if (e.key === 'Backspace') {
+				// Prevent backspace from moving to previous input when current input is empty
+				if (input.value === '' && input.selectionStart === 0) {
+					e.preventDefault();
+				}
 			}
-			// Removed backspace behavior - no more jumping to previous box
 		}
 
 		function handlePaste(e, input) {
