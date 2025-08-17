@@ -528,9 +528,11 @@
 
 		function handleKeydown(e, input) {
 			if (e.key === 'Enter' || e.key === 'Tab') {
+				e.preventDefault();
 				focusNextInput(input);
 			} else if (e.key === 'Backspace') {
-				// Completely prevent backspace from doing anything when input is empty
+				// Only prevent navigation when input is empty and cursor is at start
+				// Allow normal backspace deletion when there's content
 				if (input.value === '' && input.selectionStart === 0) {
 					e.preventDefault();
 					e.stopPropagation();
