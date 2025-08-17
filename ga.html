@@ -10,14 +10,17 @@
 	<link rel="manifest" href="manifest-ga.json">
 	<link rel="icon" href="icon.svg" type="image/svg+xml">
 	<script>
-		// Force GA Calculator tab on load
+		// Ensure GA Calculator tab is active when loading
 		window.addEventListener('DOMContentLoaded', () => {
-			// Set hash to GA calculator
-			if (window.location.hash !== '#tab=ga-calculator') {
-				window.location.hash = '#tab=ga-calculator';
-			}
-			// Load the main app
-			window.location.href = 'index.html#tab=ga-calculator';
+			// Set hash immediately and redirect
+			const targetURL = 'index.html#tab=ga-calculator';
+			
+			// Store preference in sessionStorage to ensure it persists
+			sessionStorage.setItem('preferredTab', 'ga-calculator');
+			sessionStorage.setItem('fromPWA', 'ga-calculator');
+			
+			// Force the redirect with the hash
+			window.location.replace(targetURL);
 		});
 	</script>
 </head>

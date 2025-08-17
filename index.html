@@ -1140,11 +1140,22 @@
 		// Function to handle URL hash and switch to appropriate tab
 		function handleURLHash() {
 			const hash = window.location.hash;
-			if (hash.includes('#tab=')) {
+			let targetTab = null;
+			
+			// First, check if we came from a PWA entry point
+			const fromPWA = sessionStorage.getItem('fromPWA');
+			const preferredTab = sessionStorage.getItem('preferredTab');
+			
+			if (fromPWA && preferredTab) {
+				targetTab = preferredTab;
+				// Clear the PWA flag so it doesn't interfere with normal navigation
+				sessionStorage.removeItem('fromPWA');
+			} else if (hash.includes('#tab=')) {
 				const tabParam = new URLSearchParams(hash.substring(1));
-				const targetTab = tabParam.get('tab');
-				
-				if (targetTab && ['ga-calculator', 'average-calculator', 'settings'].includes(targetTab)) {
+				targetTab = tabParam.get('tab');
+			}
+			
+			if (targetTab && ['ga-calculator', 'average-calculator', 'settings'].includes(targetTab)) {
 					// Clear current tab states
 					document.querySelectorAll('.tab-content').forEach(content => {
 						content.classList.remove('active');
