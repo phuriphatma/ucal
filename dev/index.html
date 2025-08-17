@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>GA Calculator</title>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
+	<meta name="theme-color" content="#007cba">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="apple-mobile-web-app-title" content="ucal">
+	<link rel="manifest" href="manifest.json">
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 20px;
+			max-width: 1200px;
+			margin: auto;
+			position: relative;
+			min-height: 100vh;
+			/* Improve scroll behavior */
+			scroll-behavior: smooth;
+			/* Prevent scroll anchoring issues */
+			overflow-anchor: none;
+		}
+
+		input,
+		button {
+			width: 100%;
+			padding: 10px;
+			margin: 10px 0;
+			font-size: 16px;
+		}
+
+		/* Mobile viewport fix for keyboard */
+		@media (max-width: 768px) {
+
+			html,
+			body {
+				height: 100vh;
+				height: 100dvh;
+				/* Dynamic viewport height */
+				overflow-x: hidden;
+				margin: 0;
+				padding: 0;
+				/* Fix smooth scrolling to top */
+				scroll-behavior: smooth;
+			}
+
+			body {
+				padding: 0;
+				/* Remove any potential scroll barriers */
+				position: relative;
+			}
+
+			.tab-container {
+				padding: 10px;
+				padding-bottom: 50px;
+				/* Ensure smooth scrolling within container */
+				scroll-behavior: smooth;
+			}
+
+			/* Special mobile average display - very distinct */
+			.mobile-average-bar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 2000;
+				background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+				color: white;
+				padding: 8px 15px;
+				font-size: 18px;
+				font-weight: bold;
+				text-align: center;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+				border-bottom: 3px solid #333;
+				display: none;
+				animation: slideDown 0.3s ease-out;
+				/* Prevent scroll interference */
+				pointer-events: none;
+			}
+
+
+			/* Show mobile average bar only on average calculator tab */
+			#average-calculator.active .mobile-average-bar {
+				display: block !important;
+			}
+
+			/* Hide the regular average result on mobile */
+			#average-calculator .average-result {
+				display: none;
+			}
+
+			/* Push content down when average calculator is active */
+			#average-calculator.active {
+				padding-top: 0px;
+			}
+
+			/* Add padding to tab buttons on mobile */
+			.tab-buttons {
+				padding-top: 29px;
+			}
+
+			.average-inputs {
+				margin: 10px 0;
+			}
+
+			.input-row {
+				margin: 5px 0;
+			}
+
+			input {
+				font-size: 16px;
+				/* Prevents zoom on iOS */
+				padding: 12px;
+			}
+		}
+
+		h2 {
+			text-align: center;
+		}
+
+		pre {
+			background: #f9f9f9;
+			padding: 10px;
+			white-space: pre-wrap;
+		}
+
+		.container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+
+		.form-section {
+			flex: 1 1 300px;
+		}
+
+		.calendar-section {
+			flex: 1 1 300px;
+		}
+
+		#pregnancy-wheel-container {
+			position: relative;
+			width: 400px;
+			height: 400px;
+			margin: auto;
+		}
+
+		#pregnancy-wheel {
+			display: block;
+		}
+
+		/* Tab styles */
+		.tab-container {
+			margin-bottom: 20px;
+		}
+
+		.tab-buttons {
+			display: flex;
+			gap: 0;
+			margin-bottom: 20px;
+		}
+
+		.tab-button {
+			flex: 1;
+			padding: 15px;
+			background: #f0f0f0;
+			border: 1px solid #ccc;
+			cursor: pointer;
+			transition: background-color 0.3s;
+			margin: 0;
+		}
+
+		.tab-button.active {
+			background: #007cba;
+			color: white;
+		}
+
+		.tab-button:hover {
+			background: #e0e0e0;
+		}
+
+		.tab-button.active:hover {
+			background: #005a87;
+		}
+
+		.tab-content {
+			display: none;
+		}
+
+		.tab-content.active {
+			display: block;
+		}
+
+		/* Average calculator specific styles */
+		.decimal-buttons {
+			display: flex;
+			gap: 10px;
+			margin: 15px 0;
+		}
+
+		.decimal-button {
+			flex: 1;
+			padding: 8px;
+			background: #f5f5f5;
+			border: 1px solid #ccc;
+			cursor: pointer;
+			font-size: 14px;
+			margin: 0;
+		}
+
+		.decimal-button.active {
+			background: #28a745;
+			color: white;
+		}
+
+		.average-inputs {
+			margin: 20px 0;
+		}
+
+		.input-row {
+			display: flex;
+			align-items: center;
+			margin: 10px 0;
+			gap: 10px;
+		}
+
+		.input-row input {
+			flex: 1;
+			margin: 0;
+		}
+
+		.clear-input {
+			background: #ffc107;
+			color: #000;
+			border: none;
+			padding: 10px;
+			cursor: pointer;
+			width: auto;
+			min-width: 60px;
+			font-size: 12px;
+		}
+
+		.remove-input {
+			background: #dc3545;
+			color: white;
+			border: none;
+			padding: 10px;
+			cursor: pointer;
+			width: auto;
+			min-width: 40px;
+		}
+
+		.average-result {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: center;
+			padding: 20px;
+			background: #e3f2fd;
+			border-radius: 8px;
+			margin: 20px 0;
+		}
+
+		.control-buttons {
+			display: flex;
+			gap: 10px;
+			margin: 20px 0;
+		}
+
+		.add-input-btn {
+			background: #28a745;
+			color: white;
+			flex: 1;
+		}
+
+		.clear-all-btn {
+			background: #dc3545;
+			color: white;
+			flex: 1;
+		}
+
+		.remove-extra-btn {
+			background: #fd7e14;
+			color: white;
+			flex: 1;
+		}
+
+		/* Settings tab styles */
+		.setting-item {
+			margin: 15px 0;
+		}
+
+		.setting-item label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+
+		.setting-item select {
+			width: 100%;
+			padding: 8px;
+			margin: 0;
+		}
+
+		.reset-settings-btn {
+			background: #6c757d;
+			color: white;
+			margin-top: 20px;
+		}
+
+		.settings-info {
+			background: #f8f9fa;
+			padding: 15px;
+			border-radius: 5px;
+			margin-top: 20px;
+		}
+
+		.settings-info p {
+			margin: 0;
+			font-size: 14px;
+			color: #6c757d;
+		}
+
+		.bug-report-section {
+			background: #fff3cd;
+			border: 1px solid #ffeaa7;
+			border-radius: 5px;
+			padding: 15px;
+			margin-top: 20px;
+		}
+
+		.bug-report-btn {
+			background: #e17055;
+			color: white;
+			margin-top: 10px;
+			border: none;
+			border-radius: 5px;
+			transition: background-color 0.3s;
+		}
+
+		.bug-report-btn:hover {
+			background: #d63031;
+		}
+	</style>
+
+
+	<!-- Flatpickr CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+</head>
+
+<body>
+	<!-- Tab Navigation -->
+	<div class="tab-container">
+		<div class="tab-buttons">
+			<button class="tab-button active" onclick="switchTab('ga-calculator')">GA Calculator</button>
+			<button class="tab-button" onclick="switchTab('average-calculator')">Average Calculator</button>
+			<button class="tab-button" onclick="switchTab('settings')">Settings</button>
+		</div>
+
+		<!-- GA Calculator Tab -->
+		<div id="ga-calculator" class="tab-content active">
+			<div class="container">
+				<div class="form-section">
+					<h2>4-Box GA Calculator with LMP, EDC</h2>
+
+					<div
+						style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+						<div id="connection-status"
+							style="padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">
+							&#128241; Checking...
+						</div>
+						<button onclick="toggleInstructions()"
+							style="background: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6; border-radius: 4px; width: 24px; height: 24px; font-size: 12px; cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+							?
+						</button>
+					</div>
+
+					<div id="instructions"
+						style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 13px;">
+						<h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">How to Use:</h4>
+						<ul style="margin: 8px 0; padding-left: 18px; color: #6c757d;">
+							<li><strong>LMP/EDC:</strong> Enter Last Menstrual Period or Expected Date of Confinement
+								(optional)</li>
+							<li><strong>Known Date/GA:</strong> Enter a date where you know the exact gestational age
+							</li>
+							<li><strong>Calculated Date/GA:</strong> Enter a date to calculate what the GA would be</li>
+							<li><strong>Clear buttons:</strong> Use individual clear buttons to reset specific sections
+							</li>
+						</ul>
+						<p style="margin: 8px 0 0 0; font-size: 12px; color: #868e96; font-style: italic;">Tip: You can
+							mix and match any combination of inputs.</p>
+					</div>
+
+					<h3>LMP</h3>
+					<input type="date" id="lmp" placeholder="LMP (optional)">
+
+					<h3>EDC</h3>
+					<input type="date" id="edc" placeholder="EDC (optional)">
+
+					<button onclick="clearLmpEdc()"
+						style="background: #6c757d; color: white; border: none; border-radius: 4px;">Clear LMP /
+						EDC</button>
+
+					<h3>Known Date / GA</h3>
+					<input type="date" id="dateA" placeholder="Date A (known GA)">
+					<input type="text" id="gaA" placeholder="GA on Date A (e.g. 10+3)">
+
+					<button onclick="clearKnownDateGA()"
+						style="background: #6c757d; color: white; border: none; border-radius: 4px;">Clear Known Date /
+						GA</button>
+
+					<h3>Calculated Date / GA</h3>
+					<input type="date" id="dateB" placeholder="Date B (to find GA)">
+					<input type="text" id="gaB" placeholder="GA on Date B (e.g. 12+0)">
+
+					<button onclick="clearCalculatedDateGA()"
+						style="background: #6c757d; color: white; border: none; border-radius: 4px;">Clear Calculated
+						Date / GA</button>
+
+					<button onclick="calculate()"
+						style="background: #007cba; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 500; padding: 12px;">Calculate</button>
+
+					<pre id="output"></pre>
+				</div>
+
+				<div class="calendar-section">
+					<h3>Calendar View</h3>
+					<div id="calendar"></div>
+
+					<h3>Pregnancy Wheel</h3>
+					<div id="pregnancy-wheel-container">
+						<svg id="pregnancy-wheel" width="400" height="400" viewBox="0 0 400 400">
+							<!-- Outer circle -->
+							<circle cx="200" cy="200" r="180" stroke="#333" stroke-width="2" fill="none"></circle>
+							<!-- Inner circle (rotatable) -->
+							<g id="inner-circle">
+								<circle cx="200" cy="200" r="140" stroke="#666" stroke-width="2" fill="none"></circle>
+							</g>
+						</svg>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Average Calculator Tab -->
+		<div id="average-calculator" class="tab-content">
+			<!-- Mobile average bar - shown at top on mobile only -->
+			<div id="mobile-average-bar" class="mobile-average-bar">
+				Average: 0
+			</div>
+
+			<div class="container">
+				<div class="form-section">
+					<h2>Average Calculator</h2>
+
+					<!-- Average display at the top -->
+					<div id="average-result" class="average-result">
+						Average: 0
+					</div>
+
+					<h3>Auto-Skip Settings</h3>
+					<p style="font-size: 14px; color: #666; margin: 5px 0;">Choose how many decimal places to type
+						before automatically jumping to the next input box:</p>
+					<div class="decimal-buttons">
+						<button class="decimal-button" onclick="setDecimalPrecision(0)">No decimals (skip
+							immediately)</button>
+						<button class="decimal-button active" onclick="setDecimalPrecision(1)">1 decimal place</button>
+						<button class="decimal-button" onclick="setDecimalPrecision(2)">2+ decimal places</button>
+					</div>
+
+					<div id="decimal-selector" style="display: none; margin: 10px 0;">
+						<label for="decimal-count">Exact number of decimal places: </label>
+						<select id="decimal-count" onchange="updateDecimalPrecision()">
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
+					</div>
+
+					<div class="control-buttons">
+						<button class="add-input-btn" onclick="addInput()">Add More Box</button>
+						<button class="clear-all-btn" onclick="clearAllInputs()">Clear All</button>
+						<button class="remove-extra-btn" onclick="removeExtraInputs()">Remove Extra Boxes</button>
+					</div>
+
+					<div id="average-inputs" class="average-inputs">
+						<!-- Dynamic inputs will be added here -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Settings Tab -->
+		<div id="settings" class="tab-content">
+			<div class="container">
+				<div class="form-section">
+					<h2>Settings</h2>
+
+					<h3>Default Number of Input Boxes</h3>
+					<div class="setting-item">
+						<label for="default-boxes">Default boxes when opening Average Calculator:</label>
+						<select id="default-boxes" onchange="saveSettings()">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3" selected>3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+						</select>
+					</div>
+
+					<h3>Default Auto-Skip Setting</h3>
+					<div class="setting-item">
+						<label for="default-precision">When opening Average Calculator, automatically skip
+							after:</label>
+						<select id="default-precision" onchange="saveSettings()">
+							<option value="0">No decimals (skip immediately)</option>
+							<option value="1" selected>1 decimal place</option>
+							<option value="2">2 decimal places</option>
+							<option value="3">3 decimal places</option>
+							<option value="4">4 decimal places</option>
+							<option value="5">5 decimal places</option>
+						</select>
+					</div>
+
+					<h3>Default Starting Tab</h3>
+					<div class="setting-item">
+						<label for="default-tab">Tab to show when app opens:</label>
+						<select id="default-tab" onchange="saveSettings()">
+							<option value="ga-calculator" selected>GA Calculator</option>
+							<option value="average-calculator">Average Calculator</option>
+						</select>
+					</div>
+
+					<button onclick="resetSettings()" class="reset-settings-btn">Reset to Defaults</button>
+
+					<button onclick="forceRefresh()" class="reset-settings-btn"
+						style="background: #4CAF50; margin-top: 10px;">Force Refresh App</button>
+
+					<h3>Report a Bug</h3>
+					<div class="bug-report-section">
+						<p style="font-size: 14px; color: #666; margin: 10px 0;">Found an issue? Help us improve the
+							app:</p>
+						<button onclick="reportBug()" class="bug-report-btn">Report Bug on GitHub</button>
+						<p style="font-size: 12px; color: #888; margin: 10px 0;">This will open GitHub Issues where you
+							can describe the problem you encountered.</p>
+					</div>
+
+					<div class="settings-info">
+						<p><strong>Note:</strong> Settings are saved in your browser and will be remembered when you
+							return to the calculator.</p>
+						<p><strong>Force Refresh:</strong> Use this button to get the latest version of the app from
+							GitHub.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="calculator.js"></script>
+
+	<!-- Average Calculator JavaScript -->
+	<script>
+		let decimalPrecision = 1; // Default to 1 decimal
+		let defaultBoxCount = 3;
+
+		// Settings management
+		let defaultStartingTab = 'ga-calculator';
+
+		function loadSettings() {
+			const savedBoxCount = localStorage.getItem('ucal-default-boxes');
+			const savedPrecision = localStorage.getItem('ucal-default-precision');
+			const savedStartingTab = localStorage.getItem('ucal-default-tab');
+
+			if (savedBoxCount) {
+				defaultBoxCount = parseInt(savedBoxCount);
+				document.getElementById('default-boxes').value = defaultBoxCount;
+			}
+
+			if (savedPrecision) {
+				const precision = parseInt(savedPrecision);
+				decimalPrecision = precision;
+				document.getElementById('default-precision').value = precision;
+
+				// Update UI to reflect saved precision
+				updateDecimalPrecisionUI(precision);
+			}
+
+			if (savedStartingTab) {
+				defaultStartingTab = savedStartingTab;
+				document.getElementById('default-tab').value = defaultStartingTab;
+
+				// Set the starting tab
+				setInitialTab(defaultStartingTab);
+			}
+		}
+
+		function saveSettings() {
+			const boxCount = parseInt(document.getElementById('default-boxes').value);
+			const precision = parseInt(document.getElementById('default-precision').value);
+			const startingTab = document.getElementById('default-tab').value;
+
+			localStorage.setItem('ucal-default-boxes', boxCount);
+			localStorage.setItem('ucal-default-precision', precision);
+			localStorage.setItem('ucal-default-tab', startingTab);
+
+			defaultBoxCount = boxCount;
+			decimalPrecision = precision;
+			defaultStartingTab = startingTab;
+
+			// Update average calculator if it's currently active
+			const avgTab = document.getElementById('average-calculator');
+			if (avgTab.classList.contains('active')) {
+				updateDecimalPrecisionUI(precision);
+				calculateAverage();
+			}
+		}
+
+		function resetSettings() {
+			localStorage.removeItem('ucal-default-boxes');
+			localStorage.removeItem('ucal-default-precision');
+			localStorage.removeItem('ucal-default-tab');
+
+			defaultBoxCount = 3;
+			decimalPrecision = 1;
+			defaultStartingTab = 'ga-calculator';
+
+			document.getElementById('default-boxes').value = defaultBoxCount;
+			document.getElementById('default-precision').value = decimalPrecision;
+			document.getElementById('default-tab').value = defaultStartingTab;
+
+			updateDecimalPrecisionUI(1);
+			calculateAverage();
+			setInitialTab('ga-calculator');
+		}
+
+		function forceRefresh() {
+			// Clear all caches and force reload from server
+			if ('serviceWorker' in navigator && 'caches' in window) {
+				caches.keys().then(function (cacheNames) {
+					return Promise.all(
+						cacheNames.map(function (cacheName) {
+							return caches.delete(cacheName);
+						})
+					);
+				}).then(function () {
+					// Unregister service worker
+					navigator.serviceWorker.getRegistrations().then(function (registrations) {
+						for (let registration of registrations) {
+							registration.unregister();
+						}
+					}).then(function () {
+						// Force reload with cache bypass
+						window.location.reload(true);
+					});
+				});
+			} else {
+				// Fallback for browsers without service worker support
+				window.location.reload(true);
+			}
+		}
+
+		function reportBug() {
+			// Collect basic system info for bug report
+			const userAgent = navigator.userAgent;
+			const screenSize = `${screen.width}x${screen.height}`;
+			const viewportSize = `${window.innerWidth}x${window.innerHeight}`;
+			const timestamp = new Date().toISOString();
+
+			const bugTemplate = `**Bug Report**
+
+**Device Info:**
+- User Agent: ${userAgent}
+- Screen Size: ${screenSize}
+- Viewport Size: ${viewportSize}
+- Timestamp: ${timestamp}
+
+**Describe the bug:**
+[Please describe what happened and what you expected to happen]
+
+**Steps to reproduce:**
+1. 
+2. 
+3. 
+
+**Screenshots:**
+[If applicable, add screenshots to help explain the problem]
+`;
+
+			const encodedTemplate = encodeURIComponent(bugTemplate);
+			const githubIssueURL = `https://github.com/phuriphatma/ucal/issues/new?title=Bug%20Report&body=${encodedTemplate}`;
+
+			window.open(githubIssueURL, '_blank');
+		}
+
+		function setInitialTab(tabId) {
+			// Hide all tab contents
+			document.querySelectorAll('.tab-content').forEach(content => {
+				content.classList.remove('active');
+			});
+
+			// Remove active class from all buttons
+			document.querySelectorAll('.tab-button').forEach(button => {
+				button.classList.remove('active');
+			});
+
+			// Show selected tab
+			document.getElementById(tabId).classList.add('active');
+
+			// Add active class to corresponding button
+			const buttons = document.querySelectorAll('.tab-button');
+			if (tabId === 'ga-calculator') {
+				buttons[0].classList.add('active');
+			} else if (tabId === 'average-calculator') {
+				buttons[1].classList.add('active');
+			}
+		}
+
+		function updateDecimalPrecisionUI(precision) {
+			// Update decimal buttons
+			document.querySelectorAll('.decimal-button').forEach(btn => {
+				btn.classList.remove('active');
+			});
+
+			const buttons = document.querySelectorAll('.decimal-button');
+			if (precision === 0) {
+				buttons[0].classList.add('active');
+				document.getElementById('decimal-selector').style.display = 'none';
+			} else if (precision === 1) {
+				buttons[1].classList.add('active');
+				document.getElementById('decimal-selector').style.display = 'none';
+			} else {
+				buttons[2].classList.add('active');
+				document.getElementById('decimal-selector').style.display = 'block';
+				document.getElementById('decimal-count').value = precision;
+			}
+		}
+
+		// Tab switching functionality
+		function switchTab(tabId) {
+			// Hide all tab contents
+			document.querySelectorAll('.tab-content').forEach(content => {
+				content.classList.remove('active');
+			});
+
+			// Remove active class from all buttons
+			document.querySelectorAll('.tab-button').forEach(button => {
+				button.classList.remove('active');
+			});
+
+			// Show selected tab
+			document.getElementById(tabId).classList.add('active');
+
+			// Add active class to clicked button
+			event.target.classList.add('active');
+		}
+
+		// Instructions toggle functionality
+		function toggleInstructions() {
+			const instructions = document.getElementById('instructions');
+			if (instructions.style.display === 'none') {
+				instructions.style.display = 'block';
+			} else {
+				instructions.style.display = 'none';
+			}
+		}
+
+		// Connection status functionality
+		function updateConnectionStatus() {
+			const statusElement = document.getElementById('connection-status');
+			if (navigator.onLine) {
+				statusElement.innerHTML = '&#128310; Currently Online';
+				statusElement.style.background = '#e8f5e8';
+				statusElement.style.color = '#2e7d2e';
+			} else {
+				statusElement.innerHTML = '&#128241; Currently Offline';
+				statusElement.style.background = '#fff3cd';
+				statusElement.style.color = '#856404';
+			}
+		}
+
+		// Update status on page load and when connection changes
+		document.addEventListener('DOMContentLoaded', updateConnectionStatus);
+		window.addEventListener('online', updateConnectionStatus);
+		window.addEventListener('offline', updateConnectionStatus);
+
+		// Decimal precision functionality
+		function setDecimalPrecision(precision) {
+			// Update button states
+			document.querySelectorAll('.decimal-button').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			event.target.classList.add('active');
+
+			if (precision === 2) {
+				// Show selector for 2+ decimals
+				document.getElementById('decimal-selector').style.display = 'block';
+				decimalPrecision = parseInt(document.getElementById('decimal-count').value);
+			} else {
+				// Hide selector and set precision
+				document.getElementById('decimal-selector').style.display = 'none';
+				decimalPrecision = precision;
+			}
+
+			updateAllInputBehavior();
+			calculateAverage();
+		}
+
+		function updateDecimalPrecision() {
+			decimalPrecision = parseInt(document.getElementById('decimal-count').value);
+			updateAllInputBehavior();
+			calculateAverage();
+		}
+
+		// Input management
+		function createInputRow(index) {
+			const row = document.createElement('div');
+			row.className = 'input-row';
+			row.dataset.index = index;
+
+			const input = document.createElement('input');
+			input.type = 'number';
+			input.inputMode = 'decimal';
+			input.step = 'any';
+			input.placeholder = `Number ${index + 1}`;
+			input.dataset.index = index;
+			input.addEventListener('input', handleInput);
+			input.addEventListener('keydown', handleKeydown);
+			input.addEventListener('paste', handlePaste);
+			input.addEventListener('focus', handleInputFocus);
+
+			const clearBtn = document.createElement('button');
+			clearBtn.textContent = 'Clear';
+			clearBtn.className = 'clear-input';
+			clearBtn.onclick = () => clearInput(index);
+
+			const removeBtn = document.createElement('button');
+			removeBtn.innerHTML = '&times;';
+			removeBtn.className = 'remove-input';
+			removeBtn.onclick = () => removeInput(index);
+
+			row.appendChild(input);
+			row.appendChild(clearBtn);
+
+			// Only show remove button if more than default box count
+			const currentInputCount = document.querySelectorAll('.input-row').length;
+			if (currentInputCount >= defaultBoxCount) {
+				row.appendChild(removeBtn);
+			}
+
+			return row;
+		}
+
+		function addInput() {
+			const container = document.getElementById('average-inputs');
+			// Find the next available index by counting current boxes
+			const currentRows = container.querySelectorAll('.input-row');
+			const nextIndex = currentRows.length;
+			
+			const row = createInputRow(nextIndex);
+			container.appendChild(row);
+
+			// Update remove button visibility
+			updateRemoveButtons();
+		}
+
+		function removeInput(index) {
+			const container = document.getElementById('average-inputs');
+			const row = container.querySelector(`[data-index="${index}"]`);
+			if (row) {
+				row.remove();
+				// Renumber remaining inputs to maintain sequential numbering
+				renumberInputs();
+				calculateAverage();
+				updateRemoveButtons();
+			}
+		}
+
+		function clearInput(index) {
+			const input = document.querySelector(`input[data-index="${index}"]`);
+			if (input) {
+				input.value = '';
+				input.focus();
+				calculateAverage();
+			}
+		}
+
+		function clearAllInputs() {
+			const inputs = document.querySelectorAll('#average-inputs input');
+			inputs.forEach(input => {
+				input.value = '';
+			});
+			calculateAverage();
+
+			// Focus on first input
+			const firstInput = document.querySelector('#average-inputs input');
+			if (firstInput) {
+				firstInput.focus();
+			}
+		}
+
+		function removeExtraInputs() {
+			const container = document.getElementById('average-inputs');
+			const allRows = container.querySelectorAll('.input-row');
+
+			// Keep only the default number of boxes
+			for (let i = allRows.length - 1; i >= defaultBoxCount; i--) {
+				allRows[i].remove();
+			}
+
+			// Renumber the remaining boxes to be sequential (0, 1, 2, etc.)
+			renumberInputs();
+
+			// Update remove button visibility
+			updateRemoveButtons();
+			calculateAverage();
+
+			// Focus on first input
+			const firstInput = document.querySelector('#average-inputs input');
+			if (firstInput) {
+				firstInput.focus();
+			}
+		}
+
+		function renumberInputs() {
+			const container = document.getElementById('average-inputs');
+			const rows = container.querySelectorAll('.input-row');
+			
+			rows.forEach((row, newIndex) => {
+				// Update the row's data-index
+				row.dataset.index = newIndex;
+				
+				// Update the input's data-index and placeholder
+				const input = row.querySelector('input');
+				if (input) {
+					input.dataset.index = newIndex;
+					input.placeholder = `Number ${newIndex + 1}`;
+				}
+				
+				// Update the remove button's onclick handler
+				const removeBtn = row.querySelector('.remove-input');
+				if (removeBtn) {
+					removeBtn.onclick = () => removeInput(newIndex);
+				}
+			});
+		}
+
+		function updateRemoveButtons() {
+			const rows = document.querySelectorAll('.input-row');
+			rows.forEach(row => {
+				let removeBtn = row.querySelector('.remove-input');
+
+				if (rows.length > defaultBoxCount) {
+					if (!removeBtn) {
+						removeBtn = document.createElement('button');
+						removeBtn.innerHTML = '&times;';
+						removeBtn.className = 'remove-input';
+						removeBtn.onclick = () => removeInput(parseInt(row.dataset.index));
+						row.appendChild(removeBtn);
+					}
+				} else {
+					if (removeBtn) {
+						removeBtn.remove();
+					}
+				}
+			});
+		}
+
+		// Input behavior handling - removed automatic box addition
+		function handleInput(event) {
+			const input = event.target;
+			const value = input.value;
+
+			// Check if we need to jump to next input (but don't auto-create)
+			if (decimalPrecision > 0) {
+				const dotIndex = value.indexOf('.');
+				if (dotIndex !== -1) {
+					const afterDot = value.substring(dotIndex + 1);
+					if (afterDot.length >= decimalPrecision) {
+						const nextInput = getNextInput(input);
+						if (nextInput) {
+							nextInput.focus();
+						}
+					}
+				}
+			} else {
+				// For 0 decimal precision, jump on any non-numeric input or when number is complete
+				if (value && !value.includes('.') && isValidNumber(value)) {
+					const nextInput = getNextInput(input);
+					if (nextInput) {
+						nextInput.focus();
+					}
+				}
+			}
+
+			calculateAverage();
+		}
+
+		function handleKeydown(event) {
+			const input = event.target;
+
+			// Handle backspace to previous input
+			if (event.key === 'Backspace' && input.selectionStart === 0 && input.value === '') {
+				const prevInput = getPreviousInput(input);
+				if (prevInput) {
+					prevInput.focus();
+					prevInput.setSelectionRange(prevInput.value.length, prevInput.value.length);
+				}
+			}
+		}
+
+		function handlePaste(event) {
+			event.preventDefault();
+			const pastedData = (event.clipboardData || window.clipboardData).getData('text');
+			const numbers = pastedData.split(/[\s,\n\t]+/).filter(s => s && isValidNumber(s));
+
+			if (numbers.length > 0) {
+				const currentInput = event.target;
+				const startIndex = parseInt(currentInput.dataset.index);
+
+				// Fill the inputs that exist
+				numbers.forEach((num, i) => {
+					const targetIndex = startIndex + i;
+					const targetInput = document.querySelector(`input[data-index="${targetIndex}"]`);
+					if (targetInput) {
+						targetInput.value = num;
+					}
+				});
+
+				calculateAverage();
+			}
+		}
+
+		function getNextInput(currentInput) {
+			const currentIndex = parseInt(currentInput.dataset.index);
+			return document.querySelector(`input[data-index="${currentIndex + 1}"]`);
+		}
+
+		function getPreviousInput(currentInput) {
+			const currentIndex = parseInt(currentInput.dataset.index);
+			return document.querySelector(`input[data-index="${currentIndex - 1}"]`);
+		}
+
+		function updateAllInputBehavior() {
+			// This function can be used to update input validation based on decimal precision
+			calculateAverage();
+		}
+
+		function isValidNumber(str) {
+			return !isNaN(parseFloat(str)) && isFinite(str);
+		}
+
+		// Mobile keyboard handling
+		function handleInputFocus(event) {
+			const input = event.target;
+			// Removed auto-scroll - average stays at top position
+
+			// For mobile, ensure the average remains visible
+			if (window.innerWidth <= 768) {
+				setTimeout(() => {
+					const averageEl = document.getElementById('average-result');
+					if (averageEl) {
+						averageEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+					}
+				}, 100);
+			}
+		}
+
+		// Handle viewport changes for mobile keyboard
+		let initialViewportHeight = window.innerHeight;
+
+		function handleViewportChange() {
+			const currentHeight = window.innerHeight;
+			const heightDifference = initialViewportHeight - currentHeight;
+
+			// If height decreased significantly (keyboard opened)
+			if (heightDifference > 150 && window.innerWidth <= 768) {
+				document.body.style.height = `${currentHeight}px`;
+			} else {
+				document.body.style.height = '';
+			}
+		}
+
+		// Listen for viewport changes (mobile keyboard)
+		window.addEventListener('resize', handleViewportChange);
+		window.addEventListener('orientationchange', () => {
+			setTimeout(() => {
+				initialViewportHeight = window.innerHeight;
+				handleViewportChange();
+			}, 500);
+		});
+
+		// Calculate and display average
+		function calculateAverage() {
+			const inputs = document.querySelectorAll('#average-inputs input');
+			const values = [];
+
+			inputs.forEach(input => {
+				const value = parseFloat(input.value);
+				if (!isNaN(value)) {
+					values.push(value);
+				}
+			});
+
+			let average = 0;
+			if (values.length > 0) {
+				const sum = values.reduce((acc, val) => acc + val, 0);
+				average = sum / values.length;
+			}
+
+			const averageText = `Average: ${average}`;
+
+			// Update both regular and mobile average displays
+			document.getElementById('average-result').textContent = averageText;
+			document.getElementById('mobile-average-bar').textContent = averageText;
+		}
+
+		// Initialize average calculator when page loads
+		document.addEventListener('DOMContentLoaded', function () {
+			// Load settings first
+			loadSettings();
+
+			// Add initial inputs based on settings
+			for (let i = 0; i < defaultBoxCount; i++) {
+				addInput();
+			}
+
+			// Handle URL hash for direct tab access
+			handleURLHash();
+		});
+
+		// Function to handle URL hash and switch to appropriate tab
+		function handleURLHash() {
+			const hash = window.location.hash;
+			if (hash.includes('#tab=')) {
+				const tabParam = new URLSearchParams(hash.substring(1));
+				const targetTab = tabParam.get('tab');
+				
+				if (targetTab && ['ga-calculator', 'average-calculator', 'settings'].includes(targetTab)) {
+					// Clear current tab states
+					document.querySelectorAll('.tab-content').forEach(content => {
+						content.classList.remove('active');
+					});
+					document.querySelectorAll('.tab-button').forEach(button => {
+						button.classList.remove('active');
+					});
+
+					// Activate target tab
+					document.getElementById(targetTab).classList.add('active');
+					
+					// Activate corresponding button
+					const buttons = document.querySelectorAll('.tab-button');
+					if (targetTab === 'ga-calculator') buttons[0].classList.add('active');
+					else if (targetTab === 'average-calculator') buttons[1].classList.add('active');
+					else if (targetTab === 'settings') buttons[2].classList.add('active');
+				}
+			}
+		}
+	</script>
+
+	<!-- Flatpickr JS -->
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+	<script>
+		// Date pickers for inputs
+		// flatpickr("#lmp", { dateFormat: "Y-m-d" });
+		// flatpickr("#edc", { dateFormat: "Y-m-d" });
+		// flatpickr("#dateA", { dateFormat: "Y-m-d" });
+		// flatpickr("#dateB", { dateFormat: "Y-m-d" });
+
+		// Inline calendar view (read-only)
+		flatpickr("#calendar", {
+			inline: true,
+			dateFormat: "Y-m-d",
+			defaultDate: new Date(),
+			disableMobile: true
+		});
+	</script>
+	<script>
+		const svg = document.getElementById("pregnancy-wheel");
+		const innerCircleGroup = document.getElementById("inner-circle");
+		const cx = 200,
+			cy = 200;
+
+		const daysInMonth = [31, 28, 31, 30, 31, 30,
+			31, 31, 30, 31, 30, 31
+		];
+		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+		];
+
+		const totalDays = daysInMonth.reduce((a, b) => a + b, 0);
+
+
+
+
+
+
+		// ✅ 1️⃣ Inner circle: weeks + week ticks
+		for (let i = 0; i <= 40; i++) { // changed from 1..52 to 0..40
+			const angle = (i * 7 / 365) * 2 * Math.PI - Math.PI / 2; // 7 days per week mapped to 365 days
+
+			// Week number inside
+			const rx = cx + 120 * Math.cos(angle);
+			const ry = cy + 120 * Math.sin(angle);
+			const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			text.setAttribute("x", rx);
+			text.setAttribute("y", ry);
+			text.setAttribute("text-anchor", "middle");
+			text.setAttribute("dominant-baseline", "middle");
+			text.setAttribute("font-size", "10");
+			text.textContent = i;
+
+			// When creating each text, store its base angle:
+			text.dataset.baseAngle = angle; // radians
+			innerCircleGroup.appendChild(text);
+
+			// Week tick mark
+			// Longer tick for week 0 and week 40
+			// ✅ Inner circle week ticks — longer for 0 & 40, and red color for those
+			const weekTickLength = (i === 0 || i === 40) ? 30 : 5;
+			const tickColor = (i === 0 || i === 40) ? "red" : "#666";
+
+			const x1 = cx + 140 * Math.cos(angle);
+			const y1 = cy + 140 * Math.sin(angle);
+			const x2 = cx + (140 + weekTickLength) * Math.cos(angle);
+			const y2 = cy + (140 + weekTickLength) * Math.sin(angle);
+
+			const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+			line.setAttribute("x1", x1);
+			line.setAttribute("y1", y1);
+			line.setAttribute("x2", x2);
+			line.setAttribute("y2", y2);
+			line.setAttribute("stroke", tickColor);
+			line.setAttribute("stroke-width", 1);
+			innerCircleGroup.appendChild(line);
+		}
+
+		// ✅ 2️⃣ Outer circle: day ticks and day numbers
+		let dayOffset = 0;
+		let rawRotation = 0; // continuous, no snap
+		let snappedRotation = 0; // the last snapped value
+
+		daysInMonth.forEach((days, monthIndex) => {
+			for (let d = 1; d <= days; d++) {
+				const dayNumber = dayOffset + d;
+				const angle = (dayNumber / totalDays) * 2 * Math.PI - Math.PI / 2;
+
+				// Outer day tick: longer for multiples of 5, same width
+				const tickLength = d % 5 === 0 ? 15 : 10; // 15px for 5s, 10px otherwise
+				const x1 = cx + 145 * Math.cos(angle);
+				const y1 = cy + 145 * Math.sin(angle);
+				const x2 = cx + (145 + tickLength) * Math.cos(angle);
+				const y2 = cy + (145 + tickLength) * Math.sin(angle);
+
+				const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+				line.setAttribute("x1", x1);
+				line.setAttribute("y1", y1);
+				line.setAttribute("x2", x2);
+				line.setAttribute("y2", y2);
+				line.setAttribute("stroke", "#000");
+				line.setAttribute("stroke-width", 1); // always thin
+				svg.appendChild(line);
+
+				// Day number every 5 days, placed a bit outside the tick
+				if (d % 5 === 0) {
+					const tx = cx + 165 * Math.cos(angle);
+					const ty = cy + 165 * Math.sin(angle);
+					const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+					text.setAttribute("x", tx);
+					text.setAttribute("y", ty);
+					text.setAttribute("text-anchor", "middle");
+					text.setAttribute("dominant-baseline", "middle");
+					text.setAttribute("font-size", "8");
+					text.textContent = d;
+					svg.appendChild(text);
+				}
+			}
+
+			// ✅ Draw line between months
+			const monthStartDay = dayOffset; // current offset before adding this month
+			const angle = (monthStartDay / totalDays) * 2 * Math.PI - Math.PI / 2;
+
+			const mx1 = cx + 155 * Math.cos(angle); // outer edge of day ticks
+			const my1 = cy + 155 * Math.sin(angle);
+			const mx2 = cx + 180 * Math.cos(angle); // reaches to the outer edge of month labels
+			const my2 = cy + 180 * Math.sin(angle);
+
+			const monthLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+			monthLine.setAttribute("x1", mx1);
+			monthLine.setAttribute("y1", my1);
+			monthLine.setAttribute("x2", mx2);
+			monthLine.setAttribute("y2", my2);
+			monthLine.setAttribute("stroke", "#333");
+			monthLine.setAttribute("stroke-width", 2);
+			svg.appendChild(monthLine);
+
+			// ✅ Outer month names at the far rim
+			const monthStart = dayOffset;
+			const monthEnd = dayOffset + days;
+			const midDay = (monthStart + monthEnd) / 2;
+			const midAngle = (midDay / totalDays) * 2 * Math.PI - Math.PI / 2;
+			const mx = cx + 180 * Math.cos(midAngle);
+			const my = cy + 180 * Math.sin(midAngle);
+
+			const monthText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			monthText.setAttribute("x", mx);
+			monthText.setAttribute("y", my);
+			monthText.setAttribute("text-anchor", "middle");
+			monthText.setAttribute("dominant-baseline", "middle");
+			monthText.setAttribute("font-size", "10");
+			monthText.textContent = monthNames[monthIndex];
+			svg.appendChild(monthText);
+
+			dayOffset += days;
+		});
+		let isDragging = false;
+		let lastAngle = 0;
+
+		// Mouse events
+		svg.addEventListener("mousedown", startDrag);
+		svg.addEventListener("mousemove", drag);
+		svg.addEventListener("mouseup", endDrag);
+		svg.addEventListener("mouseleave", endDrag);
+
+		// Touch events
+		svg.addEventListener("touchstart", startDragTouch, { passive: false });
+		svg.addEventListener("touchmove", dragTouch, { passive: false });
+		svg.addEventListener("touchend", endDrag);
+
+		function getAngle(clientX, clientY) {
+			const rect = svg.getBoundingClientRect();
+			const x = clientX - rect.left - cx;
+			const y = clientY - rect.top - cy;
+			return Math.atan2(y, x);
+		}
+
+		function startDrag(event) {
+			isDragging = true;
+			lastAngle = getAngle(event.clientX, event.clientY);
+		}
+
+		function startDragTouch(event) {
+			if (event.touches.length === 1) {
+				isDragging = true;
+				lastAngle = getAngle(event.touches[0].clientX, event.touches[0].clientY);
+				event.preventDefault();
+			}
+		}
+
+		function drag(event) {
+			if (!isDragging) return;
+			const angle = getAngle(event.clientX, event.clientY);
+			const delta = angle - lastAngle;
+			lastAngle = angle;
+			rotateInner(delta);
+		}
+
+		function dragTouch(event) {
+			if (!isDragging || event.touches.length !== 1) return;
+			const angle = getAngle(event.touches[0].clientX, event.touches[0].clientY);
+			const delta = angle - lastAngle;
+			lastAngle = angle;
+			rotateInner(delta);
+			event.preventDefault();
+		}
+
+		function endDrag() {
+			isDragging = false;
+		}
+
+		function rotateInner(delta) {
+			const deltaDegrees = delta * 180 / Math.PI;
+			rawRotation += deltaDegrees;
+
+			const degreesPerWeek = (1 / 365) * 360;
+
+			// Snap only when crossing threshold
+			const newSnapped = Math.round(rawRotation / degreesPerWeek) * degreesPerWeek;
+
+			// Only update if changed
+			if (newSnapped !== snappedRotation) {
+				snappedRotation = newSnapped;
+				innerCircleGroup.setAttribute("transform", `rotate(${snappedRotation} ${cx} ${cy})`);
+
+				// Keep labels upright
+				const texts = innerCircleGroup.querySelectorAll("text");
+				texts.forEach(text => {
+					const baseAngle = parseFloat(text.dataset.baseAngle);
+					const x = cx + 120 * Math.cos(baseAngle);
+					const y = cy + 120 * Math.sin(baseAngle);
+					text.setAttribute("x", x);
+					text.setAttribute("y", y);
+					text.setAttribute("transform", `rotate(${-snappedRotation} ${x} ${y})`);
+				});
+			}
+		}
+
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function () {
+				navigator.serviceWorker.register('./sw.js')
+					.then(function (registration) {
+						console.log('ServiceWorker registered: ', registration);
+					}, function (err) {
+						console.log('ServiceWorker registration failed: ', err);
+					});
+			});
+		}
+	</script>
+
+	<!-- End Credits -->
+	<footer
+		style="background: #f5f5f5; border-top: 2px solid #ddd; padding: 20px; text-align: center; margin-top: 50px;">
+		<div style="max-width: 600px; margin: 0 auto;">
+			<h3 style="color: #333; margin-bottom: 10px;">Credits</h3>
+			<p style="font-size: 16px; color: #666; margin: 10px 0;">
+				<strong>Created by:</strong> Ung MDKKU50
+			</p>
+			<p style="font-size: 14px; color: #666; margin: 10px 0;">
+				<strong>&#128241; This app works both online and offline</strong> - Save to your home screen for quick
+				access
+			</p>
+			<p style="font-size: 14px; color: #999; margin: 5px 0;">
+				<strong>&#9888; Disclaimer:</strong> Use at your own risk
+			</p>
+			<p style="font-size: 11px; color: #bbb; margin: 10px 0 0 0; font-style: italic;">
+				Originally created for personal use - bugs may exist. Use the Settings tab to report issues.
+			</p>
+		</div>
+	</footer>
+
+
+</body>
+
+</html>
