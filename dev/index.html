@@ -759,8 +759,11 @@
 			// Show selected tab
 			document.getElementById(tabId).classList.add('active');
 
-			// Add active class to clicked button
-			event.target.classList.add('active');
+			// Add active class to the corresponding button
+			const buttons = document.querySelectorAll('.tab-button');
+			if (tabId === 'ga-calculator') buttons[0].classList.add('active');
+			else if (tabId === 'average-calculator') buttons[1].classList.add('active');
+			else if (tabId === 'settings') buttons[2].classList.add('active');
 			
 			// Update URL hash for proper navigation
 			window.location.hash = '#tab=' + tabId;

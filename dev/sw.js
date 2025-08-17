@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.0.1"; // Fix tab navigation syntax error - force cache update
+const CACHE_NAME = "ucal-v3.0.2"; // Force cache refresh for tab navigation fix
 const urlsToCache = [
   "./",
   "./index.html",
