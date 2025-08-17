@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.4.0"; // Fixed manifest start_url to prevent redirect to ga-standalone.html
+const CACHE_NAME = "ucal-v3.5.0"; // Changed PWA manifest scope and added query params to force fresh PWA install
 const urlsToCache = [
   "./",
   "./index.html",

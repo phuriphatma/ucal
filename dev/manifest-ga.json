@@ -1,13 +1,13 @@
 {
-  "name": "GA Calculator - Gestational Age Calculator",
-  "short_name": "GA Calculator",
+  "name": "GA Calculator - Gestational Age Calculator v2",
+  "short_name": "GA Calc v2",
   "description": "Professional pregnancy calculator for gestational age, due dates, and pregnancy milestones",
-  "start_url": "./ga-calculator.html",
+  "start_url": "./ga-calculator.html?pwa=true&v=3.4.0",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007cba",
   "orientation": "portrait",
-  "scope": "./",
+  "scope": "./ga-calculator.html",
   "icons": [
     {
       "src": "icon-192.png",
