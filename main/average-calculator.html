@@ -9,7 +9,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="default">
 	<meta name="apple-mobile-web-app-title" content="ucal">
-	<link rel="manifest" href="manifest-average.json?v=3.7.2">
+	<link rel="manifest" href="manifest-average.json?v=3.8.0">
 	<style>
 		body {
 			font-family: sans-serif;
@@ -272,7 +272,7 @@
 	</style>
 
 	<!-- Math.js for precise decimal calculations -->
-	<script src="https://unpkg.com/mathjs@11.11.3/lib/browser/math.min.js"></script>
+	<script src="https://unpkg.com/mathjs@11.11.3/lib/browser/math.min.js?v=3.8.0"></script>
 </head>
 
 <body>
@@ -681,7 +681,16 @@
 	<!-- Service Worker Registration -->
 	<script>
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('sw.js');
+			// Unregister all existing service workers first to force update
+			navigator.serviceWorker.getRegistrations().then(function(registrations) {
+				for(let registration of registrations) {
+					registration.unregister();
+				}
+				// Register new service worker after cleanup
+				setTimeout(() => {
+					navigator.serviceWorker.register('sw.js?v=3.8.0');
+				}, 100);
+			});
 		}
 	</script>
 

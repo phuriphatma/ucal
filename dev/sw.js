@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.7.2"; // Force cache clear with aggressive strategy - fixed autoskip and average calculation
+const CACHE_NAME = "ucal-v3.8.0"; // MATH.JS PRECISION FIX - Force complete cache invalidation
 const urlsToCache = [
   "./",
   "./index.html",
