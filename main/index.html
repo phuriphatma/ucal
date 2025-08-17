@@ -298,6 +298,10 @@
 			font-weight: bold;
 		}
 
+		.setting-item label input[type="checkbox"] {
+			margin-right: 8px;
+		}
+
 		.setting-item select {
 			width: 100%;
 			padding: 8px;
@@ -533,10 +537,17 @@
 
 					<h3>Default Starting Tab</h3>
 					<div class="setting-item">
+						<label>
+							<input type="checkbox" id="enable-default-tab" onchange="saveSettings()"> 
+							Set default starting tab
+						</label>
+					</div>
+					<div class="setting-item" id="default-tab-selector" style="margin-left: 20px;">
 						<label for="default-tab">Tab to show when app opens:</label>
 						<select id="default-tab" onchange="saveSettings()">
 							<option value="ga-calculator" selected>GA Calculator</option>
 							<option value="average-calculator">Average Calculator</option>
+							<option value="settings">Settings</option>
 						</select>
 					</div>
 
@@ -574,11 +585,13 @@
 
 		// Settings management
 		let defaultStartingTab = 'ga-calculator';
+		let enableDefaultTab = false;
 
 		function loadSettings() {
 			const savedBoxCount = localStorage.getItem('ucal-default-boxes');
 			const savedPrecision = localStorage.getItem('ucal-default-precision');
 			const savedStartingTab = localStorage.getItem('ucal-default-tab');
+			const savedEnableDefaultTab = localStorage.getItem('ucal-enable-default-tab');
 
 			if (savedBoxCount) {
 				defaultBoxCount = parseInt(savedBoxCount);
@@ -597,8 +610,18 @@
 			if (savedStartingTab) {
 				defaultStartingTab = savedStartingTab;
 				document.getElementById('default-tab').value = defaultStartingTab;
+			}
 
-				// Set the starting tab
+			// Load enable default tab setting
+			enableDefaultTab = savedEnableDefaultTab === 'true';
+			document.getElementById('enable-default-tab').checked = enableDefaultTab;
+			
+			// Show/hide the tab selector based on checkbox
+			const tabSelector = document.getElementById('default-tab-selector');
+			tabSelector.style.display = enableDefaultTab ? 'block' : 'none';
+
+			// Set the starting tab only if enabled
+			if (enableDefaultTab) {
 				setInitialTab(defaultStartingTab);
 			}
 		}
@@ -607,10 +630,20 @@
 			const boxCount = parseInt(document.getElementById('default-boxes').value);
 			const precision = parseInt(document.getElementById('default-precision').value);
 			const startingTab = document.getElementById('default-tab').value;
+			const enableDefault = document.getElementById('enable-default-tab').checked;
 
 			localStorage.setItem('ucal-default-boxes', boxCount);
 			localStorage.setItem('ucal-default-precision', precision);
 			localStorage.setItem('ucal-default-tab', startingTab);
+			localStorage.setItem('ucal-enable-default-tab', enableDefault);
+
+			// Show/hide the tab selector based on checkbox
+			const tabSelector = document.getElementById('default-tab-selector');
+			tabSelector.style.display = enableDefault ? 'block' : 'none';
+
+			// Update global variables
+			enableDefaultTab = enableDefault;
+			defaultStartingTab = startingTab;
 
 			defaultBoxCount = boxCount;
 			decimalPrecision = precision;
@@ -628,14 +661,20 @@
 			localStorage.removeItem('ucal-default-boxes');
 			localStorage.removeItem('ucal-default-precision');
 			localStorage.removeItem('ucal-default-tab');
+			localStorage.removeItem('ucal-enable-default-tab');
 
 			defaultBoxCount = 3;
 			decimalPrecision = 1;
 			defaultStartingTab = 'ga-calculator';
+			enableDefaultTab = false;
 
 			document.getElementById('default-boxes').value = defaultBoxCount;
 			document.getElementById('default-precision').value = decimalPrecision;
 			document.getElementById('default-tab').value = defaultStartingTab;
+			document.getElementById('enable-default-tab').checked = enableDefaultTab;
+			
+			// Hide tab selector since default is disabled
+			document.getElementById('default-tab-selector').style.display = 'none';
 
 			updateDecimalPrecisionUI(1);
 			calculateAverage();
@@ -746,27 +785,7 @@
 
 		// Tab switching functionality
 		function switchTab(tabId) {
-			// Hide all tab contents
-			document.querySelectorAll('.tab-content').forEach(content => {
-				content.classList.remove('active');
-			});
-
-			// Remove active class from all buttons
-			document.querySelectorAll('.tab-button').forEach(button => {
-				button.classList.remove('active');
-			});
-
-			// Show selected tab
-			document.getElementById(tabId).classList.add('active');
-
-			// Add active class to the corresponding button
-			const buttons = document.querySelectorAll('.tab-button');
-			if (tabId === 'ga-calculator') buttons[0].classList.add('active');
-			else if (tabId === 'average-calculator') buttons[1].classList.add('active');
-			else if (tabId === 'settings') buttons[2].classList.add('active');
-			
-			// Update URL hash for proper navigation
-			window.location.hash = '#tab=' + tabId;
+			switchToTab(tabId, true); // Always update hash for manual tab switches
 		}
 
 		// Instructions toggle functionality
@@ -1157,29 +1176,47 @@
 				// Clear both PWA flags immediately so they don't interfere with normal navigation
 				sessionStorage.removeItem('fromPWA');
 				sessionStorage.removeItem('preferredTab');
+				
+				// For PWA entry points, don't use hash to avoid URL issues when adding to home screen
+				// Just switch directly without changing URL
+				switchToTab(targetTab, false); // false = don't update hash
+				return;
 			} else if (hash.includes('#tab=')) {
 				const tabParam = new URLSearchParams(hash.substring(1));
 				targetTab = tabParam.get('tab');
+			} else if (enableDefaultTab && defaultStartingTab) {
+				// Use default tab only if enabled and no specific tab requested
+				targetTab = defaultStartingTab;
 			}
 			
 			if (targetTab && ['ga-calculator', 'average-calculator', 'settings'].includes(targetTab)) {
-					// Clear current tab states
-					document.querySelectorAll('.tab-content').forEach(content => {
-						content.classList.remove('active');
-					});
-					document.querySelectorAll('.tab-button').forEach(button => {
-						button.classList.remove('active');
-					});
+				switchToTab(targetTab, !fromPWA); // Update hash only if not from PWA
+			}
+		}
+		
+		// Helper function to switch tabs with optional hash update
+		function switchToTab(tabId, updateHash = true) {
+			// Clear current tab states
+			document.querySelectorAll('.tab-content').forEach(content => {
+				content.classList.remove('active');
+			});
+			document.querySelectorAll('.tab-button').forEach(button => {
+				button.classList.remove('active');
+			});
 
-					// Activate target tab
-					document.getElementById(targetTab).classList.add('active');
-					
-					// Activate corresponding button
-					const buttons = document.querySelectorAll('.tab-button');
-					if (targetTab === 'ga-calculator') buttons[0].classList.add('active');
-					else if (targetTab === 'average-calculator') buttons[1].classList.add('active');
-					else if (targetTab === 'settings') buttons[2].classList.add('active');
-				}
+			// Activate target tab
+			document.getElementById(tabId).classList.add('active');
+			
+			// Activate corresponding button
+			const buttons = document.querySelectorAll('.tab-button');
+			if (tabId === 'ga-calculator') buttons[0].classList.add('active');
+			else if (tabId === 'average-calculator') buttons[1].classList.add('active');
+			else if (tabId === 'settings') buttons[2].classList.add('active');
+			
+			// Update URL hash only if requested
+			if (updateHash) {
+				window.location.hash = '#tab=' + tabId;
+			}
 		}
 	</script>
 

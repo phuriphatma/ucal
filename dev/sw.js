@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.0.2"; // Force cache refresh for tab navigation fix
+const CACHE_NAME = "ucal-v3.0.3"; // Add default tab toggle setting and fix PWA URL issues
 const urlsToCache = [
   "./",
   "./index.html",
