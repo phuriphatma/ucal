@@ -378,6 +378,7 @@
 		function initializeAverageCalculator() {
 			loadSettings();
 			createInitialInputs();
+			restoreCurrentState(); // Restore previous session data
 			updateAverage();
 		}
 
@@ -492,6 +493,7 @@
 			const inputs = document.querySelectorAll('#average-inputs input');
 			inputs.forEach(input => input.value = '');
 			updateAverage();
+			clearSavedState(); // Clear saved state when clearing all inputs
 			if (inputs.length > 0) inputs[0].focus();
 		}
 
@@ -522,6 +524,9 @@
 					}
 				});
 			}
+			
+			// Clear saved state before refresh
+			clearSavedState();
 			
 			// Force reload with cache bypass
 			setTimeout(() => {
@@ -583,6 +588,8 @@
 			}
 
 			calculateAverage();
+			// Save state immediately when input changes
+			saveCurrentState();
 		}
 
 		function handleKeydown(e, input) {
@@ -702,6 +709,9 @@
 			// Update both regular and mobile average displays
 			document.getElementById('average-result').textContent = averageText;
 			document.getElementById('mobile-average-bar').textContent = averageText;
+			
+			// Save current state to localStorage for dev version persistence
+			saveCurrentState();
 		}
 
 		function calculateAverage() {
@@ -744,12 +754,87 @@
 			// Update both regular and mobile average displays
 			document.getElementById('average-result').textContent = averageText;
 			document.getElementById('mobile-average-bar').textContent = averageText;
+			
+			// Save current state to localStorage for dev version persistence
+			saveCurrentState();
 		}
 
 		// Initialize on page load
 		document.addEventListener('DOMContentLoaded', function() {
 			initializeAverageCalculator();
 		});
+
+		// State persistence functions for dev version
+		function saveCurrentState() {
+			const inputs = document.querySelectorAll('#average-inputs input');
+			const inputData = [];
+			
+			inputs.forEach((input, index) => {
+				inputData.push({
+					index: index,
+					value: input.value,
+					dataIndex: input.dataset.index
+				});
+			});
+			
+			const state = {
+				inputData: inputData,
+				inputCount: inputCount,
+				decimalPrecision: decimalPrecision,
+				timestamp: Date.now()
+			};
+			
+			localStorage.setItem('ucal-dev-average-state', JSON.stringify(state));
+		}
+
+		function restoreCurrentState() {
+			try {
+				const savedState = localStorage.getItem('ucal-dev-average-state');
+				if (!savedState) return;
+				
+				const state = JSON.parse(savedState);
+				
+				// Check if saved state is less than 24 hours old
+				const now = Date.now();
+				const savedTime = state.timestamp || 0;
+				const hoursDiff = (now - savedTime) / (1000 * 60 * 60);
+				
+				if (hoursDiff > 24) {
+					// Clear old state if it's more than 24 hours old
+					localStorage.removeItem('ucal-dev-average-state');
+					return;
+				}
+				
+				if (state.inputData && state.inputData.length > 0) {
+					// Clear existing inputs first
+					const container = document.getElementById('average-inputs');
+					container.innerHTML = '';
+					inputCount = 0;
+					
+					// Restore saved inputs
+					state.inputData.forEach((inputInfo, index) => {
+						const input = addInput();
+						if (input && inputInfo.value) {
+							input.value = inputInfo.value;
+						}
+					});
+					
+					// Restore other settings
+					if (state.inputCount) inputCount = state.inputCount;
+					if (state.decimalPrecision !== undefined) {
+						decimalPrecision = state.decimalPrecision;
+						updateDecimalPrecisionUI(state.decimalPrecision);
+					}
+				}
+			} catch (error) {
+				console.error('Error restoring saved state:', error);
+				// If there's an error, just continue with fresh state
+			}
+		}
+
+		function clearSavedState() {
+			localStorage.removeItem('ucal-dev-average-state');
+		}
 	</script>
 
 	<!-- Service Worker Registration -->
