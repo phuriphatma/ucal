@@ -627,8 +627,13 @@
 
 			let average = 0;
 			if (values.length > 0) {
-				const sum = values.reduce((acc, val) => acc + val, 0);
-				average = sum / values.length;
+				// Use Math.js for precise decimal calculations
+				const mathValues = values.map(v => math.bignumber(v));
+				const sum = mathValues.reduce((acc, val) => math.add(acc, val), math.bignumber(0));
+				const avgBigNumber = math.divide(sum, values.length);
+				// Round to 10 decimal places to avoid floating point errors, then convert to regular number
+				average = math.round(avgBigNumber, 10);
+				average = math.number(average);
 			}
 
 			const averageText = `Average: ${average}`;
@@ -651,8 +656,13 @@
 
 			let average = 0;
 			if (values.length > 0) {
-				const sum = values.reduce((acc, val) => acc + val, 0);
-				average = sum / values.length;
+				// Use Math.js for precise decimal calculations
+				const mathValues = values.map(v => math.bignumber(v));
+				const sum = mathValues.reduce((acc, val) => math.add(acc, val), math.bignumber(0));
+				const avgBigNumber = math.divide(sum, values.length);
+				// Round to 10 decimal places to avoid floating point errors, then convert to regular number
+				average = math.round(avgBigNumber, 10);
+				average = math.number(average);
 			}
 
 			const averageText = `Average: ${average}`;
