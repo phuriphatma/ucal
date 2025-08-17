@@ -1,9 +1,16 @@
-const CACHE_NAME = "ucal-v2.0.0"; // Improve UI clarity and add bug reporting
+const CACHE_NAME = "ucal-v3.0.0"; // Fix PWA entry points and tab navigation
 const urlsToCache = [
   "./",
   "./index.html",
+  "./ga.html",
+  "./avg.html",
+  "./average.html",
+  "./settings.html",
   "./calculator.js",
   "./manifest.json",
+  "./manifest-ga.json",
+  "./manifest-average.json",
+  "./manifest-settings.json",
   "./icon-192.png",
   "./icon-512.png",
   "./icon.svg"
