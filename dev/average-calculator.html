@@ -269,6 +269,12 @@
 			color: white;
 			flex: 1;
 		}
+
+		.force-refresh-btn {
+			background: #6f42c1;
+			color: white;
+			flex: 1;
+		}
 	</style>
 
 	<!-- Math.js for precise decimal calculations -->
@@ -324,6 +330,7 @@
 						<button class="add-input-btn" onclick="addInput()">Add More Box</button>
 						<button class="clear-all-btn" onclick="clearAllInputs()">Clear All</button>
 						<button class="remove-extra-btn" onclick="removeExtraInputs()">Remove Extra Boxes</button>
+						<button class="force-refresh-btn" onclick="forceRefresh()">Force Refresh</button>
 					</div>
 
 					<div id="average-inputs" class="average-inputs">
@@ -481,6 +488,31 @@
 			updateAverage();
 		}
 
+		function forceRefresh() {
+			// Clear all caches and force reload
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.getRegistrations().then(function(registrations) {
+					for(let registration of registrations) {
+						registration.unregister();
+					}
+				});
+			}
+			
+			// Clear browser cache
+			if ('caches' in window) {
+				caches.keys().then(function(names) {
+					for (let name of names) {
+						caches.delete(name);
+					}
+				});
+			}
+			
+			// Force reload with cache bypass
+			setTimeout(() => {
+				window.location.reload(true);
+			}, 500);
+		}
+
 		function setDecimalPrecision(precision) {
 			decimalPrecision = precision;
 			updateDecimalPrecisionUI(precision);
@@ -512,8 +544,6 @@
 			const input = event.target;
 			const value = input.value;
 
-			calculateAverage();
-
 			// Check if we need to jump to next input (but don't auto-create)
 			if (decimalPrecision > 0) {
 				const dotIndex = value.indexOf('.');
@@ -535,6 +565,8 @@
 					}
 				}
 			}
+
+			calculateAverage();
 		}
 
 		function handleKeydown(e, input) {
