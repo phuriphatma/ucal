@@ -396,7 +396,7 @@
 			input.step = 'any';
 			input.id = `input-${inputCount}`;
 			input.dataset.index = inputCount; // Add data-index attribute
-			input.addEventListener('input', function() { handleInput(this); });
+			input.addEventListener('input', handleInput);
 			input.addEventListener('keydown', function(e) { handleKeydown(e, this); });
 			input.addEventListener('paste', function(e) { handlePaste(e, this); });
 			
@@ -508,24 +508,31 @@
 			decimalPrecision = count;
 		}
 
-		function handleInput(input) {
+		function handleInput(event) {
+			const input = event.target;
 			const value = input.value;
-			
+
 			updateAverage();
-			
-			// Auto-skip logic based on index.html implementation
+
+			// Check if we need to jump to next input (but don't auto-create)
 			if (decimalPrecision > 0) {
 				const dotIndex = value.indexOf('.');
 				if (dotIndex !== -1) {
 					const afterDot = value.substring(dotIndex + 1);
 					if (afterDot.length >= decimalPrecision) {
-						focusNextInput(input);
+						const nextInput = getNextInput(input);
+						if (nextInput) {
+							nextInput.focus();
+						}
 					}
 				}
 			} else {
-				// For 0 decimal precision, jump on any complete number
-				if (value && !value.includes('.') && !isNaN(parseFloat(value))) {
-					focusNextInput(input);
+				// For 0 decimal precision, jump on any non-numeric input or when number is complete
+				if (value && !value.includes('.') && isValidNumber(value)) {
+					const nextInput = getNextInput(input);
+					if (nextInput) {
+						nextInput.focus();
+					}
 				}
 			}
 		}
@@ -582,6 +589,20 @@
 				inputs[currentIndex + 1].focus();
 			}
 			// Removed automatic input creation - user must manually add boxes
+		}
+
+		function getNextInput(currentInput) {
+			const currentIndex = parseInt(currentInput.dataset.index);
+			return document.querySelector(`input[data-index="${currentIndex + 1}"]`);
+		}
+
+		function getPreviousInput(currentInput) {
+			const currentIndex = parseInt(currentInput.dataset.index);
+			return document.querySelector(`input[data-index="${currentIndex - 1}"]`);
+		}
+
+		function isValidNumber(str) {
+			return !isNaN(parseFloat(str)) && isFinite(str);
 		}
 
 		function focusPreviousInput(currentInput) {
