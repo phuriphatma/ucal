@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v3.6.0"; // Fixed PWA redirect for average-calculator.html - preventing redirect to avg-standalone.html
+const CACHE_NAME = "ucal-v3.7.0"; // Fixed autoskip and average calculation functionality
 const urlsToCache = [
   "./",
   "./index.html",
