@@ -1,0 +1,32 @@
+.bili *{box-sizing:border-box}
+.bili html,.bili body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0f172a;background:#f8fafc}
+.bili header{padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#fff}
+.bili .header-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.bili .header-text h1{margin:0 0 .25rem}
+.bili .refresh-btn{background:#059669;color:white;border:none;border-radius:6px;padding:.5rem .8rem;font-size:.9rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.bili .refresh-btn:hover{background:#047857}
+.bili .refresh-btn:disabled{background:#9ca3af;cursor:not-allowed}
+.bili .refresh-btn.refreshing{background:#6b7280}
+.bili .disclaimer{color:#475569}
+.bili .disclaimer.small{font-size:.9rem}
+.bili main{max-width:1000px;margin:1rem auto;padding:0 1rem 3rem;display:grid;gap:1rem}
+.bili .card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.bili .results-card{position:sticky;top:1rem;z-index:100;border-color:#0ea5e9;border-width:2px}
+.bili .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.bili label{display:flex;flex-direction:column;gap:.35rem}
+.bili label>span{font-weight:600}
+.bili input[type="text"],.bili input[type="datetime-local"],.bili select{padding:.5rem .6rem;border:1px solid #cbd5e1;border-radius:6px;font-size:1rem}
+.bili fieldset{border:1px solid #cbd5e1;border-radius:6px;padding:.5rem .75rem}
+.bili fieldset.inline{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center}
+.bili legend{padding:0 .25rem;font-weight:600}
+.bili .actions{display:flex;gap:.5rem;align-items:center;margin-top:.5rem}
+.bili button{background:#0ea5e9;color:white;border:none;border-radius:6px;padding:.55rem .9rem;font-weight:600;cursor:pointer}
+.bili button:hover{background:#0284c7}
+.bili button[type="reset"]{background:#64748b}
+.bili button[type="reset"]:hover{background:#475569}
+.bili .chart-wrap{background:#fff;border:1px dashed #cbd5e1;border-radius:8px;padding:.5rem}
+.bili .summary{margin-top:.5rem;color:#334155}
+.bili .primary-threshold{font-size:2.2rem;line-height:1.1;font-weight:800;color:#111827;margin:.25rem 0}
+.bili .secondary-meta{font-size:1rem;color:#475569;margin:.1rem 0}
+.bili .muted{color:#64748b}
+.bili .small{font-size:.9rem}
