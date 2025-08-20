@@ -1,20 +1,9 @@
-const CACHE_NAME = "ucal-v3.9.0-" + Date.now(); // TIMESTAMP CACHE BUST - Force complete invalidation
+const CACHE_NAME = "ucal-v2.0.0"; // Improve UI clarity and add bug reporting
 const urlsToCache = [
   "./",
   "./index.html",
-  "./ga.html",
-  "./avg.html",
-  "./ga-calculator.html",
-  "./average-calculator.html", 
-  "./settings.html",
-  "./ga-standalone.html",
-  "./avg-standalone.html",
-  "./average.html",
   "./calculator.js",
   "./manifest.json",
-  "./manifest-ga.json",
-  "./manifest-average.json",
-  "./manifest-settings.json",
   "./icon-192.png",
   "./icon-512.png",
   "./icon.svg"
@@ -59,21 +48,17 @@ self.addEventListener("install", event => {
 
 // Activate: clean old caches
 self.addEventListener("activate", event => {
+  const whitelist = [CACHE_NAME, CACHE_NAME + '-external'];
   event.waitUntil(
-    // Delete ALL caches to force refresh
     caches.keys().then(cacheNames =>
       Promise.all(
-        cacheNames.map(cacheName => {
-          console.log('Deleting cache:', cacheName);
-          return caches.delete(cacheName);
+        cacheNames.map(name => {
+          if (!whitelist.includes(name)) {
+            return caches.delete(name);
+          }
         })
       )
     ).then(() => {
-      // Now create fresh cache
-      return caches.open(CACHE_NAME).then(cache => {
-        return cache.addAll(urlsToCache);
-      });
-    }).then(() => {
       return self.clients.claim();
     })
   );

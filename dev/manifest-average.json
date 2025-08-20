@@ -1,27 +1,25 @@
 {
-  "name": "Average Calculator - FIXED v7 No Cache Issues",
-  "short_name": "Avg Calc v7",
-  "description": "Fast and simple calculator for averages, sums, and basic math operations with precise decimal calculations - CACHE FIXED",
-  "start_url": "./average-calculator.html?pwa=true&v=3.9.0",
+  "name": "Average Calculator",
+  "short_name": "Average Calc",
+  "description": "Quick average calculator with auto-skip functionality",
+  "start_url": "./average.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#28a745",
-  "orientation": "portrait",
-  "scope": "./average-calculator.html",
+  "orientation": "portrait-primary",
+  "scope": "./",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     }
   ],
-  "categories": ["productivity", "utilities", "calculator"],
-  "lang": "en"
+  "categories": ["productivity", "utilities", "education"],
+  "lang": "en-US"
 }

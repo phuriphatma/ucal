@@ -1,0 +1,27 @@
+{
+  "name": "Average Calculator - Quick Math Calculator",
+  "short_name": "Average Calc",
+  "description": "Fast and simple calculator for averages, sums, and basic math operations",
+  "start_url": "./avg-standalone.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#28a745",
+  "orientation": "portrait",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["productivity", "utilities", "calculator"],
+  "lang": "en"
+}
