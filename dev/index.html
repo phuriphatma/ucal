@@ -2,6 +2,14 @@
 <html>
 
 <head>
+	<script>
+		// Clear all caches on page load
+		if ('caches' in window) {
+			caches.keys().then(function (names) {
+				for (let name of names) caches.delete(name);
+			});
+		}
+	</script>
 	<title>GA Calculator</title>
 
 
@@ -370,6 +378,7 @@
 			<button class="tab-button active" onclick="switchTab('ga-calculator')">GA Calculator</button>
 			<button class="tab-button" onclick="switchTab('average-calculator')">Average Calculator</button>
 			<button class="tab-button" onclick="switchTab('bili-calculator')">Bilirubin Calculator</button>
+			<button class="tab-button" onclick="switchTab('weight-calculator')">Weight Calculator</button>
 			<button class="tab-button" onclick="switchTab('settings')">Settings</button>
 		</div>
 
@@ -539,9 +548,9 @@
 										Calculator</button>
 								</div>
 								<!-- <div class="header-actions">
-        <button id="forceRefreshBtn" type="button" class="refresh-btn"
-          title="Force refresh to get latest updates from GitHub Pages">🔄 Force Refresh</button>
-      </div> -->
+		<button id="forceRefreshBtn" type="button" class="refresh-btn"
+		  title="Force refresh to get latest updates from GitHub Pages">🔄 Force Refresh</button>
+	  </div> -->
 							</div>
 						</header>
 
@@ -576,13 +585,13 @@
 								</div>
 								</section>
 								<!-- <div style="display: flex; gap: 2em; align-items: flex-start; margin-top:2em;">
-      <aside style="flex: 1 1 350px; min-width: 300px; max-width: 400px;">
-        <h3 style="margin-top:0;">PediTools Page Preview:</h3>
+	  <aside style="flex: 1 1 350px; min-width: 300px; max-width: 400px;">
+		<h3 style="margin-top:0;">PediTools Page Preview:</h3>
 <div id="peditoolsIframePreview" style="margin:0;">
   <iframe id="peditoolsIframe" src="" style="width:100%; height:600px; border:none; transform:scale(0.8); transform-origin:0 0;"></iframe>
 </div>
-      </aside>
-    </div> -->
+	  </aside>
+	</div> -->
 
 								<section class="card" style="margin-top:0em;">
 									<!-- <h2>Inputs</h2> -->
@@ -865,7 +874,7 @@
 							// Register Service Worker for offline functionality
 							if ('serviceWorker' in navigator) {
 								window.addEventListener('load', () => {
-									navigator.serviceWorker.register('./sw.js')
+									navigator.serviceWorker.register('/dev/sw.js')
 										.then((registration) => {
 											console.log('ServiceWorker registration successful with scope: ', registration.scope);
 										})
@@ -1154,24 +1163,34 @@
 			}
 		}
 
-		// Tab switching functionality
 		function switchTab(tabId) {
-			// Hide all tab contents
-			document.querySelectorAll('.tab-content').forEach(content => {
-				content.classList.remove('active');
-			});
-
-			// Remove active class from all buttons
-			document.querySelectorAll('.tab-button').forEach(button => {
-				button.classList.remove('active');
-			});
-
-			// Show selected tab
-			document.getElementById(tabId).classList.add('active');
-
-			// Add active class to clicked button
-			event.target.classList.add('active');
+			if (tabId === 'ga-calculator') {
+				window.location.href = 'ga-calculator.html';
+			} else if (tabId === 'average-calculator') {
+				window.location.href = 'average-calculator.html';
+			} else if (tabId === 'settings') {
+				window.location.href = 'settings.html';
+			}
 		}
+
+		// // Tab switching functionality
+		// function switchTab(tabId) {
+		// 	// Hide all tab contents
+		// 	document.querySelectorAll('.tab-content').forEach(content => {
+		// 		content.classList.remove('active');
+		// 	});
+
+		// 	// Remove active class from all buttons
+		// 	document.querySelectorAll('.tab-button').forEach(button => {
+		// 		button.classList.remove('active');
+		// 	});
+
+		// 	// Show selected tab
+		// 	document.getElementById(tabId).classList.add('active');
+
+		// 	// Add active class to clicked button
+		// 	event.target.classList.add('active');
+		// }
 
 		// Instructions toggle functionality
 		function toggleInstructions() {
@@ -1816,7 +1835,7 @@
 
 		if ('serviceWorker' in navigator) {
 			window.addEventListener('load', function () {
-				navigator.serviceWorker.register('./sw.js')
+				navigator.serviceWorker.register('/dev/sw.js')
 					.then(function (registration) {
 						console.log('ServiceWorker registered: ', registration);
 					}, function (err) {

@@ -1,29 +1,402 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>Settings - ucal</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
+	<title>Settings - ucal Configuration</title>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, user-scalable=no, interactive-widget=resizes-content">
 	<meta name="theme-color" content="#6c757d">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="default">
-	<meta name="apple-mobile-web-app-title" content="Settings">
+	<meta name="apple-mobile-web-app-title" content="ucal">
 	<link rel="manifest" href="manifest-settings.json">
-	<link rel="icon" type="image/svg+xml" href="icon.svg">
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 20px;
+			max-width: 1200px;
+			margin: auto;
+			position: relative;
+			min-height: 100vh;
+			/* Improve scroll behavior */
+			scroll-behavior: smooth;
+			/* Prevent scroll anchoring issues */
+			overflow-anchor: none;
+		}
+
+		input,
+		button {
+			width: 100%;
+			padding: 10px;
+			margin: 10px 0;
+			font-size: 16px;
+		}
+
+		/* Mobile viewport fix for keyboard */
+		@media (max-width: 768px) {
+
+			html,
+			body {
+				height: 100vh;
+				height: 100dvh;
+				/* Dynamic viewport height */
+				overflow-x: hidden;
+				margin: 0;
+				padding: 0;
+				/* Fix smooth scrolling to top */
+				scroll-behavior: smooth;
+			}
+
+			body {
+				padding: 0;
+				/* Remove any potential scroll barriers */
+				position: relative;
+			}
+
+			.tab-container {
+				padding: 10px;
+				padding-bottom: 50px;
+				/* Ensure smooth scrolling within container */
+				scroll-behavior: smooth;
+			}
+
+			/* Add padding to tab buttons on mobile */
+			.tab-buttons {
+				padding-top: 29px;
+			}
+
+			input {
+				font-size: 16px;
+				/* Prevents zoom on iOS */
+				padding: 12px;
+			}
+		}
+
+		h2 {
+			text-align: center;
+		}
+
+		.container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+
+		.form-section {
+			flex: 1 1 300px;
+		}
+
+		/* Tab styles */
+		.tab-container {
+			margin-bottom: 20px;
+		}
+
+		.tab-buttons {
+			display: flex;
+			gap: 0;
+			margin-bottom: 20px;
+		}
+
+		.tab-button {
+			flex: 1;
+			padding: 15px;
+			background: #f0f0f0;
+			border: 1px solid #ccc;
+			cursor: pointer;
+			transition: background-color 0.3s;
+			margin: 0;
+		}
+
+		.tab-button.active {
+			background: #007cba;
+			color: white;
+		}
+
+		.tab-button:hover {
+			background: #e0e0e0;
+		}
+
+		.tab-button.active:hover {
+			background: #005a87;
+		}
+
+		.tab-content {
+			display: none;
+		}
+
+		.tab-content.active {
+			display: block;
+		}
+
+		/* Settings tab styles */
+		.setting-item {
+			margin: 15px 0;
+		}
+
+		.setting-item label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+
+		.setting-item label input[type="checkbox"] {
+			margin-right: 8px;
+		}
+
+		.setting-item select {
+			width: 100%;
+			padding: 8px;
+			margin: 0;
+		}
+
+		.reset-settings-btn {
+			background: #6c757d;
+			color: white;
+			margin-top: 20px;
+		}
+
+		.settings-info {
+			background: #f8f9fa;
+			padding: 15px;
+			border-radius: 5px;
+			margin-top: 20px;
+		}
+
+		.settings-info p {
+			margin: 0;
+			font-size: 14px;
+			color: #6c757d;
+		}
+
+		.bug-report-section {
+			background: #fff3cd;
+			border: 1px solid #ffeaa7;
+			border-radius: 5px;
+			padding: 15px;
+			margin-top: 20px;
+		}
+
+		.bug-report-btn {
+			background: #e17055;
+			color: white;
+			margin-top: 10px;
+			border: none;
+			border-radius: 5px;
+			transition: background-color 0.3s;
+		}
+
+		.bug-report-btn:hover {
+			background: #d63031;
+		}
+	</style>
+
 </head>
+
 <body>
+	<!-- Tab Navigation -->
+	<div class="tab-container">
+		<div class="tab-buttons">
+			<button class="tab-button" onclick="switchTab('ga-calculator')">GA Calculator</button>
+			<button class="tab-button" onclick="switchTab('average-calculator')">Average Calculator</button>
+			<button class="tab-button active" onclick="switchTab('settings')">Settings</button>
+		</div>
+
+		<!-- Settings Tab (Only this tab will be visible) -->
+		<div id="settings" class="tab-content active">
+			<div class="container">
+				<div class="form-section">
+					<h2>Settings</h2>
+
+					<h3>Default Number of Input Boxes</h3>
+					<div class="setting-item">
+						<label for="default-boxes">Default boxes when opening Average Calculator:</label>
+						<select id="default-boxes" onchange="saveSettings()">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3" selected>3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+						</select>
+					</div>
+
+					<h3>Default Auto-Skip Setting</h3>
+					<div class="setting-item">
+						<label for="default-precision">When opening Average Calculator, automatically skip
+							after:</label>
+						<select id="default-precision" onchange="saveSettings()">
+							<option value="0">No decimals (skip immediately)</option>
+							<option value="1" selected>1 decimal place</option>
+							<option value="2">2 decimal places</option>
+							<option value="3">3 decimal places</option>
+							<option value="4">4 decimal places</option>
+							<option value="5">5 decimal places</option>
+						</select>
+					</div>
+
+					<h3>Default Starting Tab</h3>
+					<div class="setting-item">
+						<label>
+							<input type="checkbox" id="enable-default-tab" onchange="saveSettings()">
+							Set default starting tab
+						</label>
+					</div>
+					<div class="setting-item" id="default-tab-selector" style="margin-left: 20px;">
+						<label for="default-tab">Tab to show when app opens:</label>
+						<select id="default-tab" onchange="saveSettings()">
+							<option value="ga-calculator" selected>GA Calculator</option>
+							<option value="average-calculator">Average Calculator</option>
+							<option value="settings">Settings</option>
+						</select>
+					</div>
+
+					<button onclick="resetSettings()" class="reset-settings-btn">Reset to Defaults</button>
+
+					<button onclick="forceRefresh()" class="reset-settings-btn"
+						style="background: #4CAF50; margin-top: 10px;">Force Refresh App</button>
+
+					<h3>Report a Bug</h3>
+					<div class="bug-report-section">
+						<p style="font-size: 14px; color: #666; margin: 10px 0;">Found an issue? Help us improve the
+							app:</p>
+						<button onclick="reportBug()" class="bug-report-btn">Report Bug on GitHub</button>
+						<p style="font-size: 12px; color: #888; margin: 10px 0;">This will open GitHub Issues where you
+							can describe the problem you encountered.</p>
+					</div>
+
+					<div class="settings-info">
+						<p><strong>Note:</strong> Settings are saved in your browser and will be remembered when you
+							return to the calculator.</p>
+						<p><strong>Force Refresh:</strong> Use this button to get the latest version of the app from
+							GitHub.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script>
-		// Redirect to main app but start on Settings tab
-		const url = new URL(window.location);
-		url.pathname = '/ucal/index.html';
-		url.hash = '#tab=settings';
-		window.location.replace(url.toString());
+		// Tab switching functionality - Navigate to unique URLs
+		function switchTab(tabId) {
+			if (tabId === 'ga-calculator') {
+				window.location.href = 'ga-calculator.html';
+			} else if (tabId === 'average-calculator') {
+				window.location.href = 'average-calculator.html';
+			} else if (tabId === 'settings') {
+				// Stay on current page since we're already on Settings
+				return;
+			}
+		}
+
+		// Settings management
+		let defaultStartingTab = 'ga-calculator';
+		let enableDefaultTab = false;
+		let decimalPrecision = 1;
+		let defaultBoxCount = 3;
+
+		function loadSettings() {
+			const savedBoxCount = localStorage.getItem('ucal-default-boxes');
+			const savedPrecision = localStorage.getItem('ucal-default-precision');
+			const savedStartingTab = localStorage.getItem('ucal-default-tab');
+			const savedEnableDefaultTab = localStorage.getItem('ucal-enable-default-tab');
+
+			if (savedBoxCount) {
+				defaultBoxCount = parseInt(savedBoxCount);
+				document.getElementById('default-boxes').value = defaultBoxCount;
+			}
+
+			if (savedPrecision) {
+				const precision = parseInt(savedPrecision);
+				decimalPrecision = precision;
+				document.getElementById('default-precision').value = precision;
+			}
+
+			if (savedStartingTab) {
+				defaultStartingTab = savedStartingTab;
+				document.getElementById('default-tab').value = defaultStartingTab;
+			}
+
+			// Load enable default tab setting
+			enableDefaultTab = savedEnableDefaultTab === 'true';
+			document.getElementById('enable-default-tab').checked = enableDefaultTab;
+
+			// Show/hide the tab selector based on checkbox
+			const tabSelector = document.getElementById('default-tab-selector');
+			tabSelector.style.display = enableDefaultTab ? 'block' : 'none';
+		}
+
+		function saveSettings() {
+			const boxCount = parseInt(document.getElementById('default-boxes').value);
+			const precision = parseInt(document.getElementById('default-precision').value);
+			const startingTab = document.getElementById('default-tab').value;
+			const enableDefault = document.getElementById('enable-default-tab').checked;
+
+			localStorage.setItem('ucal-default-boxes', boxCount);
+			localStorage.setItem('ucal-default-precision', precision);
+			localStorage.setItem('ucal-default-tab', startingTab);
+			localStorage.setItem('ucal-enable-default-tab', enableDefault);
+
+			// Show/hide the tab selector based on checkbox
+			const tabSelector = document.getElementById('default-tab-selector');
+			tabSelector.style.display = enableDefault ? 'block' : 'none';
+
+			// Update global variables
+			enableDefaultTab = enableDefault;
+			defaultStartingTab = startingTab;
+			defaultBoxCount = boxCount;
+			decimalPrecision = precision;
+		}
+
+		function resetSettings() {
+			localStorage.removeItem('ucal-default-boxes');
+			localStorage.removeItem('ucal-default-precision');
+			localStorage.removeItem('ucal-default-tab');
+			localStorage.removeItem('ucal-enable-default-tab');
+
+			// Reset to defaults
+			document.getElementById('default-boxes').value = '3';
+			document.getElementById('default-precision').value = '1';
+			document.getElementById('default-tab').value = 'ga-calculator';
+			document.getElementById('enable-default-tab').checked = false;
+			document.getElementById('default-tab-selector').style.display = 'none';
+
+			alert('Settings have been reset to defaults.');
+		}
+
+		function forceRefresh() {
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.getRegistrations().then(function (registrations) {
+					registrations.forEach(function (registration) {
+						registration.unregister();
+					});
+					window.location.reload(true);
+				});
+			} else {
+				window.location.reload(true);
+			}
+		}
+
+		function reportBug() {
+			window.open('https://github.com/phuriphatma/ucal/issues/new', '_blank');
+		}
+
+		// Initialize settings on page load
+		document.addEventListener('DOMContentLoaded', function () {
+			loadSettings();
+		});
 	</script>
-	
-	<!-- Fallback for users with JavaScript disabled -->
-	<noscript>
-		<meta http-equiv="refresh" content="0; url=index.html#tab=settings">
-	</noscript>
-	
-	<p>Redirecting to Settings...</p>
+
+	<!-- Service Worker Registration -->
+	<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/dev/sw.js');
+		}
+	</script>
+
 </body>
+
 </html>

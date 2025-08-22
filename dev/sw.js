@@ -1,4 +1,4 @@
-const CACHE_NAME = "ucal-v2.0.0"; // Improve UI clarity and add bug reporting
+const CACHE_NAME = "ucal-v2.0.1"; // Improve UI clarity and add bug reporting
 const urlsToCache = [
   "./",
   "./index.html",
@@ -6,7 +6,18 @@ const urlsToCache = [
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
-  "./icon.svg"
+  "./icon.svg",
+  "./app.js",
+  "./bili.html",
+  "./bili.css",
+  "./settings.html",
+  "./average-calculator.html",
+  "./ga-calculator.html",
+  "./weight.js",
+  "./force_refresh.js",
+  "./thresholds_demo.js",
+  "./thresholds_aap_anyrisk_exchange.js",
+  "./thresholds_aap_anyrisk_phototherapy.js"
 ];
 
 // External resources to cache separately
@@ -84,7 +95,7 @@ self.addEventListener("fetch", event => {
         const url = event.request.url;
 
         // Determine which cache to use
-        const cacheName = externalResources.includes(url) ? 
+        const cacheName = externalResources.includes(url) ?
           CACHE_NAME + '-external' : CACHE_NAME;
 
         // Only cache GET requests
